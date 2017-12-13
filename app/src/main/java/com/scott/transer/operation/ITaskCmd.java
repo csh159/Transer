@@ -14,9 +14,17 @@ import java.util.List;
 
 public interface ITaskCmd {
 
+    String getTaskId();
+
+    String getGroupId();
+
+    int getState();
+
     ITask getTask();
 
     List<ITask> getTasks();
+
+    String[] getTaskIds();
 
     OperationType getOperationType();
 

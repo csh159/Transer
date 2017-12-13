@@ -17,6 +17,11 @@ public class OperationProxy implements ITaskOperation{
     ITaskOperation mDatabaseOperation;
 
     @Override
+    public ITaskManager getManager() {
+        return null;
+    }
+
+    @Override
     public void addTask(ITask task) {
         mMemoryOpeation.addTask(task);
         mDatabaseOperation.addTask(task);

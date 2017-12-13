@@ -1,6 +1,7 @@
 package com.scott.transer.operation;
 
 import com.scott.transer.task.ITask;
+import com.scott.transer.task.ITaskHolderProxy;
 
 import java.util.List;
 
@@ -14,8 +15,12 @@ import java.util.List;
 public class MemoryOperation implements ITaskOperation {
 
     @Override
-    public void addTask(ITask task) {
+    public ITaskManager getManager() {
+        return null;
+    }
 
+    @Override
+    public void addTask(ITask task) {
     }
 
     @Override

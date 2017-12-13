@@ -1,7 +1,6 @@
 package com.scott.transer.operation;
 
 import com.scott.transer.task.ITask;
-import com.scott.transer.task.ITaskInternalHandler;
 
 import java.util.List;
 
@@ -13,7 +12,8 @@ import java.util.List;
  */
 
 public interface ITaskOperation {
-    void setTaskHandler(ITaskInternalHandler handler);
+
+    ITaskManager getManager();
 
     void addTask(ITask task);
 
