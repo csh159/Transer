@@ -1,4 +1,4 @@
-package com.scott.transer.handler;
+package com.scott.transer.task;
 
 /**
  * <p>Author:    shijiale</p>
@@ -7,15 +7,7 @@ package com.scott.transer.handler;
  * <p>Describe:</p>
  */
 
-public interface ITaskHandler {
-
-    void start();
-
-    void stop();
-
-    void pause();
-
-    void resume();
+public interface ITaskInternalHandler extends ITaskHolder{
 
     void handle(String src,String dest);
 
@@ -26,10 +18,4 @@ public interface ITaskHandler {
     boolean isSuccessful(String response);
 
     Runnable toRunnable();
-
-    int getState();
-
-    ITask getTask();
-
-    void setTask(ITask task);
 }

@@ -1,4 +1,4 @@
-package com.scott.transer.handler;
+package com.scott.transer.task;
 
 /**
  * <p>Author:    shijiale</p>
@@ -30,4 +30,8 @@ public interface ITask {
     long getCompleteTime();
 
     long getCompleteLength();
+
+    int getState();
+
+    TaskType getType();
 }

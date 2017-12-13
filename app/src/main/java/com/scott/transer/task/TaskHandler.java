@@ -1,4 +1,4 @@
-package com.scott.transer.handler;
+package com.scott.transer.task;
 
 /**
  * <p>Author:    shijiale</p>
@@ -7,7 +7,7 @@ package com.scott.transer.handler;
  * <p>Describe:</p>
  */
 
-public class TaskHandler implements ITaskHandler {
+public class TaskHandler implements ITaskInternalHandler {
 
     @Override
     public void start() {
