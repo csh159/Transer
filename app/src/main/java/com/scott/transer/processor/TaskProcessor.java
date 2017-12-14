@@ -1,8 +1,9 @@
-package com.scott.transer.operation;
+package com.scott.transer.processor;
 
 import com.scott.transer.task.ITask;
-import com.scott.transer.task.ITaskHolderProxy;
+import com.scott.transer.task.ITaskHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,11 +13,11 @@ import java.util.List;
  * <p>Describe:</p>
  */
 
-public class MemoryOperation implements ITaskOperation {
+public class TaskProcessor implements ITaskProcessor {
 
     @Override
-    public ITaskManager getManager() {
-        return null;
+    public void setTaskHolders(List<ITaskHolder> taskHolders) {
+
     }
 
     @Override

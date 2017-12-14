@@ -1,7 +1,9 @@
-package com.scott.transer.operation;
+package com.scott.transer.processor;
 
 import com.scott.transer.task.ITask;
+import com.scott.transer.task.ITaskHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +13,13 @@ import java.util.List;
  * <p>Describe:</p>
  */
 
-public class DatabaseOperation implements ITaskOperation {
+public class TaskDbProcessor implements ITaskProcessor {
+
+    @Override
+    public void setTaskHolders(List<ITaskHolder> taskHolders) {
+
+    }
+
     @Override
     public void addTask(ITask task) {
 

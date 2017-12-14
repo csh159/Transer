@@ -11,8 +11,6 @@ import java.util.concurrent.ExecutorService;
 
 public interface ITaskHolderProxy extends ITaskHolder{
 
-    void setExecutorService(ExecutorService service);
-
     void setTaskStateListener(ITaskStatusCallback callback);
 
     void setTaskHandler(ITaskInternalHandler handler);

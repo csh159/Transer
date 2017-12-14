@@ -68,4 +68,9 @@ public class TaskHandler implements ITaskInternalHandler {
     public void setTask(ITask task) {
 
     }
+
+    @Override
+    public TaskType getType() {
+        return null;
+    }
 }

@@ -1,4 +1,4 @@
-package com.scott.transer.operation;
+package com.scott.transer.processor;
 
 import com.scott.transer.task.ITask;
 
@@ -11,7 +11,7 @@ import java.util.List;
  * <p>Describe:</p>
  */
 
-public interface ITaskOperationCallback {
+public interface ITaskProcessCallback {
 
     void onFinished(List<ITask> tasks);
 

@@ -1,4 +1,4 @@
-package com.scott.transer.operation;
+package com.scott.transer.processor;
 
 import com.scott.transer.task.ITask;
 import com.scott.transer.task.TaskType;
@@ -26,7 +26,7 @@ public interface ITaskCmd {
 
     String[] getTaskIds();
 
-    OperationType getOperationType();
+    ProcessType getOperationType();
 
     TaskType getTaskType();
 }

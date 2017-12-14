@@ -1,4 +1,4 @@
-package com.scott.transer.operation;
+package com.scott.transer.processor;
 
 /**
  * <p>Author:    shijiale</p>
@@ -7,7 +7,7 @@ package com.scott.transer.operation;
  * <p>Describe:</p>
  */
 
-public enum OperationType {
+public enum ProcessType {
     TYPE_ADD_TASK,
     TYPE_ADD_TASKS,
     TYPE_DELETE_TASK,
