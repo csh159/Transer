@@ -42,7 +42,7 @@ public class TaskCmd implements ITaskCmd{
 
     @Override
     public List<ITask> getTasks() {
-        return null;
+        return mBuilder.getTasks();
     }
 
     @Override

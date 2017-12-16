@@ -10,6 +10,7 @@ import com.scott.annotionprocessor.TaskSubscriber;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.event.TaskEventBus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -51,9 +52,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void send(View v) {
+
+        List<ITask> tasks = new ArrayList<>();
+        for(int i = 0; i < 10; i++) {
+            ITask task = new TaskBuilder()
+                    .setDataSource("127.0.0.1:8080/upload")
+                    .setTaskType(TaskType.TYPE_UPLOAD)
+                    .build();
+            tasks.add(task);
+        }
         TaskEventBus.getDefault().execute(new TaskCmdBuilder()
-                .setProcessType(ProcessType.TYPE_ADD_TASK)
-                .setTask(new TaskBuilder().setDataSource("www.baidu.com")
-                        .build()).build());
+                .setProcessType(ProcessType.TYPE_ADD_TASKS)
+                .setTasks(tasks).build());
     }
 }

@@ -5,6 +5,8 @@ import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.task.ITaskBuilder;
 import com.scott.transer.task.Task;
 
+import java.util.List;
+
 /**
  * <P>Author: shijiale</P>
  * <P>Date: 2017/12/16</P>
@@ -31,7 +33,7 @@ public class TaskBuilder implements ITaskBuilder {
 
     @Override
     public String getSesstionId() {
-        return null;
+        return System.currentTimeMillis() + "";
     }
 
     @Override
@@ -51,7 +53,7 @@ public class TaskBuilder implements ITaskBuilder {
 
     @Override
     public String getTaskId() {
-        return null;
+        return getSesstionId();
     }
 
     @Override
@@ -148,7 +150,8 @@ public class TaskBuilder implements ITaskBuilder {
 
     @Override
     public ITaskBuilder setTaskType(TaskType type) {
-        return null;
+        taskType = type;
+        return this;
     }
 
     @Override

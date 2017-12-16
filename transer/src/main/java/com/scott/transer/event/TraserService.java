@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import com.scott.transer.dao.DaoHelper;
 import com.scott.transer.processor.ITaskCmd;
 import com.scott.transer.processor.ITaskManager;
 import com.scott.transer.processor.ITaskManagerProxy;
@@ -61,6 +62,8 @@ public class TraserService extends Service implements ITaskProcessCallback{
     @Override
     public void onCreate() {
         super.onCreate();
+        DaoHelper.init(getApplicationContext());
+
         mTaskManagerProxy = new TaskManagerProxy();
         mTaskManagerProxy.setProcessCallback(this);
         mTaskManagerProxy.setTaskProcessor(new ProcessorProxy(new TaskProcessor(),new TaskDbProcessor()));

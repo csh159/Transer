@@ -20,6 +20,7 @@ public class TaskCmdBuilder implements ITaskCmdBuilder {
     private TaskType taskType = TaskType.TYPE_UPLOAD;
     private ProcessType processType;
     private ITask task;
+    private List<ITask> tasks;
 
     @Override
     public ITaskCmdBuilder setTaskId(String taskId) {
@@ -44,7 +45,8 @@ public class TaskCmdBuilder implements ITaskCmdBuilder {
 
     @Override
     public ITaskCmdBuilder setTasks(List<ITask> tasks) {
-        return null;
+        this.tasks = tasks;
+        return this;
     }
 
     @Override
@@ -96,7 +98,7 @@ public class TaskCmdBuilder implements ITaskCmdBuilder {
 
     @Override
     public List<ITask> getTasks() {
-        return null;
+        return tasks;
     }
 
     @Override

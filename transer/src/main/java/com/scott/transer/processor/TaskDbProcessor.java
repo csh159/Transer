@@ -1,7 +1,12 @@
 package com.scott.transer.processor;
 
 import com.scott.annotionprocessor.ITask;
+import com.scott.transer.dao.DaoHelper;
+import com.scott.transer.dao.TaskDao;
 import com.scott.transer.task.ITaskHolder;
+import com.scott.transer.task.Task;
+
+import org.greenrobot.greendao.query.Query;
 
 import java.util.List;
 
@@ -13,6 +18,11 @@ import java.util.List;
  */
 
 public class TaskDbProcessor implements ITaskProcessor {
+
+    private TaskDao mTaskDao;
+    public TaskDbProcessor() {
+        mTaskDao = DaoHelper.getDbSession().getTaskDao();
+    }
 
     @Override
     public void setTaskManager(ITaskManager manager) {
@@ -26,17 +36,21 @@ public class TaskDbProcessor implements ITaskProcessor {
 
     @Override
     public void addTask(ITask task) {
-
+        mTaskDao.insert((Task) task);
     }
 
     @Override
-    public void addTasks(List<ITask> tasks) {
-
+    public void addTasks(List tasks) {
+        mTaskDao.insertInTx(tasks);
     }
 
     @Override
     public void deleteTask(String taskId) {
-
+        Task task = mTaskDao
+                .queryBuilder()
+                .where(TaskDao.Properties.TaskId.eq(taskId))
+                .unique();
+        mTaskDao.delete(task);
     }
 
     @Override

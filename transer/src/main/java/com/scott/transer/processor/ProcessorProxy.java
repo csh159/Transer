@@ -23,6 +23,12 @@ public class ProcessorProxy implements ITaskProcessor {
     }
 
     @Override
+    public void setTaskManager(ITaskManager manager) {
+        mProcessor.setTaskManager(manager);
+        mDbProcessor.setTaskManager(null);
+    }
+
+    @Override
     public void setTaskHolders(List<ITaskHolder> taskHolders) {
         mProcessor.setTaskHolders(taskHolders);
         mDbProcessor.setTaskHolders(taskHolders);
