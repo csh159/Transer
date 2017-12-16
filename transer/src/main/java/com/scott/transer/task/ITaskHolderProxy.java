@@ -1,5 +1,7 @@
 package com.scott.transer.task;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * <p>Author:    shijiale</p>
  * <p>Date:      2017-12-13 13:17</p>
@@ -12,4 +14,8 @@ public interface ITaskHolderProxy extends ITaskHolder{
     void setTaskStateListener(ITaskStatusCallback callback);
 
     void setTaskHandler(ITaskInternalHandler handler);
+
+    void setThreadPool(ExecutorService threadPool);
+
+    ITaskInternalHandler getTaskHandler();
 }

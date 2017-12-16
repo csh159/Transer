@@ -4,6 +4,7 @@ import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.ITask;
 import com.scott.transer.task.ITaskHolder;
 import com.scott.annotionprocessor.TaskType;
+import com.scott.transer.task.ITaskInternalHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
         mManager = manager;
         mManager.setProcessCallback(this);
         mManager.setTaskProcessor(mProcessor);
+        mProcessor.setTaskManager(mManager);
     }
 
     @Override
@@ -50,7 +52,7 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
     @Override
     public void setTaskProcessor(ITaskProcessor operation) {
         mProcessor = operation;
-        operation.setTaskHolders(mTasks);
+        mProcessor.setTaskHolders(mTasks);
     }
 
     @Override
@@ -59,14 +61,26 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
     }
 
     @Override
-    public void addTaskThreadPool(ExecutorService threadPool) {
-        mManager.addTaskThreadPool(threadPool);
+    public void setThreadPool(TaskType taskType, ExecutorService threadPool) {
+
     }
+
 
     @Override
     public ExecutorService getTaskThreadPool(TaskType type) {
         return mManager.getTaskThreadPool(type);
     }
+
+    @Override
+    public ITaskInternalHandler getTaskHandler(TaskType taskType) {
+        return mManager.getTaskHandler(taskType);
+    }
+
+    @Override
+    public void setTaskHandler(TaskType type, Class<? extends ITaskInternalHandler> handler) {
+        mManager.setTaskHandler(type,handler);
+    }
+
 
     @Override
     public void onFinished(TaskType taskType, ProcessType processType, List<ITask> tasks) {
@@ -81,6 +95,6 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
 //        ITask[] objects = (ITask[]) taskList.toArray();
 //        ITask[] objects1 = Arrays.copyOf(objects, objects.length);
 //        tasks = Arrays.asList(objects1);
-        mProcessCallback.onFinished(taskType,processType,tasks);
+        mProcessCallback.onFinished(taskType,processType,taskList);
     }
 }

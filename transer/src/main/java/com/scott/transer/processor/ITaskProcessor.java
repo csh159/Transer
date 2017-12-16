@@ -14,6 +14,8 @@ import java.util.List;
 
 public interface ITaskProcessor {
 
+    void setTaskManager(ITaskManager manager);
+
     void setTaskHolders(List<ITaskHolder> taskHolders);
 
     void addTask(ITask task);

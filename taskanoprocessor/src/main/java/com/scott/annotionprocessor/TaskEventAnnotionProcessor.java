@@ -14,6 +14,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -115,7 +116,8 @@ public class TaskEventAnnotionProcessor extends AbstractProcessor {
                 sameType.add(methodParam);
 
                 for(ProcessType processType : params1.processType) {
-                    sameType = processMethods.get(params1.processType);
+                    System.out.println("m = " + menthodName + ",paramType = " + Arrays.asList(params1.processType));
+                    sameType = processMethods.get(processType);
                     if (sameType == null) {
                         sameType = new ArrayList<>();
                         processMethods.put(processType, sameType);
@@ -145,11 +147,10 @@ public class TaskEventAnnotionProcessor extends AbstractProcessor {
 
             for(TaskType type : TaskType.values()) {
                 method = MethodSpec.methodBuilder("On" + type.name())
-                        .addStatement("TaskType taskType = " + type + ";")
                         .addParameter(ProcessType.class, "processType")
                         .addParameter(List.class, "tasks")
-                        .addModifiers(Modifier.PRIVATE);
-//                        .addCode(generateCurTypeCode(type,params));
+                        .addModifiers(Modifier.PRIVATE)
+                        .addCode(createTypeSwitch(processMethods,type,clazzName));
                 builder.addMethod(method.build());
             }
 
@@ -179,22 +180,26 @@ public class TaskEventAnnotionProcessor extends AbstractProcessor {
         return sb.toString();
     }
 
-    private String createTypeSwitch(Map<ProcessType,List<Map<String,TaskSubcriberParams>>> processMethods) {
+    private String createTypeSwitch(Map<ProcessType,List<Map<String,TaskSubcriberParams>>> processMethods,TaskType type,String clazzName) {
         StringBuilder sb = new StringBuilder();
         sb.append("switch(processType) {\n");
         for(ProcessType processType : processMethods.keySet()) {
             sb.append("case " + processType + ":\n");
             List<Map<String,TaskSubcriberParams>> params = processMethods.get(processType);
             for(Map<String,TaskSubcriberParams> param : params){
-
+                for(String methodName : param.keySet()) {
+                    TaskSubcriberParams methodParam = param.get(methodName);
+                    if(methodParam.taskType == type) {
+                        sb.append("((" + clazzName + ")mScriber)." + methodName + "(" + (methodParam.hasExtas ? "tasks" : "") + ");\n");
+                    }
+                }
             }
+            sb.append("\nbreak;\n");
         }
-        return null;
+        sb.append("}");
+        return sb.toString();
     }
 
-    private String createUploadSwitch() {
-        return null;
-    }
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {

@@ -2,12 +2,15 @@ package com.scott.example;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
+import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.TaskSubscriber;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.event.TaskEventBus;
-import com.scott.transer.task.Task;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,20 +21,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     @TaskSubscriber(processType = ProcessType.TYPE_CHANGE_TASK)
     public void onTaskStop() {
-        TaskEventBus.getDefault().post(null);
+        TaskEventBus.getDefault().execute(null);
     }
 
-    @TaskSubscriber(processType = {ProcessType.TYPE_CHANGE_TASK,ProcessType.TYPE_ADD_TASKS})
-    public void stop() {
+    @TaskSubscriber(processType = {ProcessType.TYPE_CHANGE_TASK})
+    public void stop(List<ITask> taskList) {
 
     }
 
     @TaskSubscriber(processType =
-            {ProcessType.TYPE_CHANGE_TASK,ProcessType.TYPE_ADD_TASKS}
-            ,taskType = TaskType.TYPE_DOWNLOAD)
+            {ProcessType.TYPE_CHANGE_TASK, ProcessType.TYPE_ADD_TASK}
+            , taskType = TaskType.TYPE_UPLOAD)
     public void stop2() {
 
     }
@@ -46,5 +48,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         TaskEventBus.getDefault().unregesit(this);
+    }
+
+    public void send(View v) {
+        TaskEventBus.getDefault().execute(new TaskCmdBuilder()
+                .setProcessType(ProcessType.TYPE_ADD_TASK)
+                .setTask(new TaskBuilder().setDataSource("www.baidu.com")
+                        .build()).build());
     }
 }

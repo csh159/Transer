@@ -1,5 +1,7 @@
 package com.scott.transer.task;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * <p>Author:    shijiale</p>
  * <p>Date:      2017-12-13 11:52</p>
@@ -17,5 +19,13 @@ public interface ITaskInternalHandler extends ITaskHolder{
 
     boolean isSuccessful(String response);
 
-    Runnable toRunnable();
+    void setThreadPool(ExecutorService threadPool);
+
+    void start();
+
+    void stop();
+
+    void pause();
+
+    void resume();
 }

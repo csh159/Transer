@@ -15,6 +15,11 @@ import java.util.List;
 public class TaskDbProcessor implements ITaskProcessor {
 
     @Override
+    public void setTaskManager(ITaskManager manager) {
+
+    }
+
+    @Override
     public void setTaskHolders(List<ITaskHolder> taskHolders) {
 
     }

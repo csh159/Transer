@@ -18,8 +18,12 @@ import com.scott.transer.processor.TaskManagerProxy;
 import com.scott.transer.processor.TaskProcessor;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
+import com.scott.transer.task.DefaultDownloadHandler;
+import com.scott.transer.task.DefaultUploadHandler;
+import com.scott.transer.task.Task;
 
 import java.util.List;
+import java.util.concurrent.Executors;
 
 /**
  * <p>Author:    shijiale</p>
@@ -31,9 +35,7 @@ import java.util.List;
 public class TraserService extends Service implements ITaskProcessCallback{
 
     ITaskManagerProxy mTaskManagerProxy;
-    ITaskManager mTaskManager;
-    ITaskProcessor mTaskProcessor;
-    EventDispatcher mDispatcher;
+
     public static final String ACTION_EXECUTE_CMD = "_CMD";
 
     @Nullable
@@ -47,7 +49,7 @@ public class TraserService extends Service implements ITaskProcessCallback{
         String action = intent.getAction();
         switch (action) {
             case ACTION_EXECUTE_CMD:
-                ITaskCmd cmd = mDispatcher.getTaskCmd();
+                ITaskCmd cmd = TaskEventBus.sInstance.mDispatcher.getTaskCmd();
                 if(cmd != null) {
                     mTaskManagerProxy.process(cmd);
                 }
@@ -60,18 +62,17 @@ public class TraserService extends Service implements ITaskProcessCallback{
     public void onCreate() {
         super.onCreate();
         mTaskManagerProxy = new TaskManagerProxy();
-        mTaskManager = new TaskManager();
-        mTaskProcessor = new ProcessorProxy(new TaskProcessor(),new TaskDbProcessor());
-
-        mTaskManagerProxy.setTaskManager(mTaskManager);
         mTaskManagerProxy.setProcessCallback(this);
-        mTaskManagerProxy.setTaskProcessor(mTaskProcessor);
-
-        mDispatcher = new EventDispatcher(getApplicationContext());
+        mTaskManagerProxy.setTaskProcessor(new ProcessorProxy(new TaskProcessor(),new TaskDbProcessor()));
+        mTaskManagerProxy.setTaskManager(new TaskManager());
+        mTaskManagerProxy.setTaskHandler(TaskType.TYPE_DOWNLOAD, DefaultDownloadHandler.class);
+        mTaskManagerProxy.setTaskHandler(TaskType.TYPE_UPLOAD, DefaultUploadHandler.class);
+        mTaskManagerProxy.setThreadPool(TaskType.TYPE_UPLOAD, Executors.newFixedThreadPool(3));
+        mTaskManagerProxy.setThreadPool(TaskType.TYPE_DOWNLOAD,Executors.newFixedThreadPool(3));
     }
 
     @Override
     public void onFinished(TaskType taskType, ProcessType type,List<ITask> tasks) {
-        mDispatcher.dispatchTasks(taskType,type,tasks);
+        TaskEventBus.sInstance.mDispatcher.dispatchTasks(taskType,type,tasks);
     }
 }

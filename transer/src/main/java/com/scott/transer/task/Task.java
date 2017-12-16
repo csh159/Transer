@@ -12,14 +12,20 @@ import com.scott.annotionprocessor.TaskType;
 
 public class Task implements ITask {
 
+    private ITaskBuilder mBuilder;
+
+    public Task(ITaskBuilder builder) {
+        mBuilder = builder;
+    }
+
     @Override
     public String getDataSource() {
-        return null;
+        return mBuilder.getDataSource();
     }
 
     @Override
     public String getDestSource() {
-        return null;
+        return mBuilder.getDestSource();
     }
 
     @Override
@@ -74,6 +80,11 @@ public class Task implements ITask {
 
     @Override
     public TaskType getType() {
+        return null;
+    }
+
+    @Override
+    public String getUserId() {
         return null;
     }
 }

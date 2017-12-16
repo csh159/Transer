@@ -11,13 +11,8 @@ import com.scott.annotionprocessor.TaskType;
  */
 
 public interface ITaskHolder {
-    void start();
 
-    void stop();
-
-    void pause();
-
-    void resume();
+    void setState(int state);
 
     int getState();
 

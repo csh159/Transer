@@ -13,4 +13,6 @@ public interface TaskState {
     int STATE_PAUSE = 1;
     int STATE_STOP = 2;
     int STATE_FINISH = 3;
+    int STATE_RESUME = 4;
+    int STATE_START = 5;
 }

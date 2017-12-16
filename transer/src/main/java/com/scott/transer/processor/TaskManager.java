@@ -1,10 +1,15 @@
 package com.scott.transer.processor;
 
+import android.util.Log;
+
 import com.scott.annotionprocessor.ITask;
+import com.scott.transer.task.ITaskInternalHandler;
 import com.scott.transer.task.TaskState;
 import com.scott.annotionprocessor.TaskType;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -18,6 +23,8 @@ public class TaskManager implements ITaskManager {
 
     private ITaskProcessor mOperationProxy;
     private ITaskProcessCallback mCallback;
+    private Map<TaskType,ExecutorService> mThreadPool = new HashMap<>();
+    private Map<TaskType,Class<? extends ITaskInternalHandler>> mTaskHandlers = new HashMap<>();
 
     @Override
     public void process(ITaskCmd cmd) {
@@ -53,22 +60,22 @@ public class TaskManager implements ITaskManager {
                 mOperationProxy.changeTasksState(cmd.getState(),cmd.getGroupId());
                 break;
             case TYPE_QUERY_TASK:
-                ITask task = mOperationProxy.getTask(cmd.getTaskId());
+                mOperationProxy.getTask(cmd.getTaskId());
                 break;
             case TYPE_QUERY_TASKS_SOME:
-                List<ITask> tasks = mOperationProxy.getTasks(cmd.getTaskIds());
+                mOperationProxy.getTasks(cmd.getTaskIds());
                 break;
             case TYPE_QUERY_TASKS_ALL:
-                tasks = mOperationProxy.getAllTasks();
+                mOperationProxy.getAllTasks();
                 break;
             case TYPE_QUERY_TASKS_COMPLETED:
-                tasks = mOperationProxy.getTasks(TaskState.STATE_FINISH);
+                mOperationProxy.getTasks(TaskState.STATE_FINISH);
                 break;
             case TYPE_QUERY_TASKS_GROUP:
-                tasks = mOperationProxy.getGroup(cmd.getGroupId());
+                mOperationProxy.getGroup(cmd.getGroupId());
                 break;
             case TYPE_QUERY_TASKS_STATE:
-                tasks = mOperationProxy.getTasks(cmd.getState());
+                mOperationProxy.getTasks(cmd.getState());
                 break;
             case TASK_CHANGE_TASK_ALL:
                 mOperationProxy.changeAllTasksState(cmd.getState());
@@ -91,12 +98,33 @@ public class TaskManager implements ITaskManager {
     }
 
     @Override
-    public void addTaskThreadPool(ExecutorService threadPool) {
-
+    public void setThreadPool(TaskType taskType, ExecutorService threadPool) {
+        mThreadPool.put(taskType,threadPool);
     }
 
     @Override
     public ExecutorService getTaskThreadPool(TaskType type) {
+        return mThreadPool.get(type);
+    }
+
+    @Override
+    public ITaskInternalHandler getTaskHandler(TaskType taskType) {
+        Class<? extends ITaskInternalHandler> handlerClzz = mTaskHandlers.get(taskType);
+        try {
+            ITaskInternalHandler taskHandler = handlerClzz.newInstance();
+            taskHandler.setThreadPool(getTaskThreadPool(taskType));
+            return taskHandler;
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
         return null;
     }
+
+    @Override
+    public void setTaskHandler(TaskType type, Class<? extends ITaskInternalHandler> handler) {
+        mTaskHandlers.put(type,handler);
+    }
+
 }

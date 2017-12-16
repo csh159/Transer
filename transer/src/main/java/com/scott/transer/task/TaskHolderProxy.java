@@ -3,6 +3,8 @@ package com.scott.transer.task;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * <p>Author:    shijiale</p>
  * <p>Date:      2017-12-14 15:29</p>
@@ -12,24 +14,24 @@ import com.scott.annotionprocessor.TaskType;
 
 public class TaskHolderProxy implements ITaskHolderProxy {
 
-    @Override
-    public void start() {
-
-    }
+    private ITaskInternalHandler mHandler;
 
     @Override
-    public void stop() {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
+    public void setState(int state) {
+        switch (state) {
+            case TaskState.STATE_STOP:
+                mHandler.stop();
+                break;
+            case TaskState.STATE_PAUSE:
+                mHandler.pause();
+                break;
+            case TaskState.STATE_RESUME:
+                mHandler.resume();
+                break;
+            case TaskState.STATE_START:
+                mHandler.start();
+                break;
+        }
     }
 
     @Override
@@ -60,5 +62,15 @@ public class TaskHolderProxy implements ITaskHolderProxy {
     @Override
     public void setTaskHandler(ITaskInternalHandler handler) {
 
+    }
+
+    @Override
+    public void setThreadPool(ExecutorService threadPool) {
+
+    }
+
+    @Override
+    public ITaskInternalHandler getTaskHandler() {
+        return null;
     }
 }

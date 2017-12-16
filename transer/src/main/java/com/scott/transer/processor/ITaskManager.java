@@ -1,6 +1,7 @@
 package com.scott.transer.processor;
 
 import com.scott.annotionprocessor.TaskType;
+import com.scott.transer.task.ITaskInternalHandler;
 
 import java.util.concurrent.ExecutorService;
 
@@ -19,7 +20,11 @@ public interface ITaskManager {
 
     void setProcessCallback(ITaskProcessCallback callback);
 
-    void addTaskThreadPool(ExecutorService threadPool);
+    void setThreadPool(TaskType taskType,ExecutorService threadPool);
 
     ExecutorService getTaskThreadPool(TaskType type);
+
+    ITaskInternalHandler getTaskHandler(TaskType taskType);
+
+    void setTaskHandler(TaskType type,Class<? extends ITaskInternalHandler> handler);
 }

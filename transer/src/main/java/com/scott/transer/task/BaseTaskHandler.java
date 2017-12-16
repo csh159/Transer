@@ -3,6 +3,8 @@ package com.scott.transer.task;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * <p>Author:    shijiale</p>
  * <p>Date:      2017-12-14 15:31</p>
@@ -11,6 +13,17 @@ import com.scott.annotionprocessor.TaskType;
  */
 
 public abstract class BaseTaskHandler implements ITaskInternalHandler {
+
+    @Override
+    public void setThreadPool(ExecutorService threadPool) {
+
+    }
+
+    @Override
+    public void setState(int state) {
+
+    }
+
     @Override
     public void start() {
 
@@ -51,28 +64,4 @@ public abstract class BaseTaskHandler implements ITaskInternalHandler {
         return null;
     }
 
-    @Override
-    public void handle(String src, String dest) {
-
-    }
-
-    @Override
-    public int handlePice(String src, String dest, long start, long end) {
-        return 0;
-    }
-
-    @Override
-    public boolean isPiceSuccessful(String response) {
-        return false;
-    }
-
-    @Override
-    public boolean isSuccessful(String response) {
-        return false;
-    }
-
-    @Override
-    public Runnable toRunnable() {
-        return null;
-    }
 }

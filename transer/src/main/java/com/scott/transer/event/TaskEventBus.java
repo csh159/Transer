@@ -1,6 +1,11 @@
 package com.scott.transer.event;
 
+import android.content.Context;
+
 import com.scott.transer.processor.ITaskCmd;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>Author:    shijiale</p>
@@ -11,23 +16,38 @@ import com.scott.transer.processor.ITaskCmd;
 
 public class TaskEventBus {
 
-    public void regesit(Object obj) {
+    EventDispatcher mDispatcher;
+    volatile static TaskEventBus sInstance;
 
+    public static void init(Context context) {
+        synchronized (TaskEventBus.class) {
+            if (sInstance == null) {
+                sInstance = new TaskEventBus(context);
+            }
+        }
+    }
+
+    TaskEventBus(Context context) {
+        mDispatcher = new EventDispatcher(context);
+        sInstance = this;
+    }
+
+    public void regesit(Object obj) {
+        mDispatcher.regist(obj);
     }
 
     public void unregesit(Object obj) {
-
+        mDispatcher.unregist(obj);
     }
 
     public static TaskEventBus getDefault() {
-        return null;
+        return sInstance;
     }
 
-    public synchronized void post(ITaskCmd cmd) {
-        ICmdEventDispatcher dispatcher = EventDispatcher.getCmdDispatcher();
-        if(dispatcher == null) {
+    public synchronized void execute(ITaskCmd cmd) {
+        if(mDispatcher == null) {
             return;
         }
-        dispatcher.dispatchCmd(cmd);
+        mDispatcher.dispatchCmd(cmd);
     }
 }

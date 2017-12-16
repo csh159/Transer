@@ -36,4 +36,6 @@ public interface ITask {
     int getState();
 
     TaskType getType();
+
+    String getUserId();
 }
