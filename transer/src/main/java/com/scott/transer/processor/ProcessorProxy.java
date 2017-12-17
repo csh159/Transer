@@ -160,4 +160,10 @@ public class ProcessorProxy implements ITaskProcessor {
         mProcessor.changeAllTasksState(state);
         mDbProcessor.changeAllTasksState(state);
     }
+
+    @Override
+    public void updateTask(ITask task) {
+        mProcessor.updateTask(task);
+        mDbProcessor.updateTask(task);
+    }
 }

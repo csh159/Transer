@@ -197,4 +197,9 @@ public class TaskDbProcessor implements ITaskProcessor {
 
         mTaskDao.updateInTx(tasks);
     }
+
+    @Override
+    public void updateTask(ITask task) {
+        mTaskDao.update((Task) task);
+    }
 }

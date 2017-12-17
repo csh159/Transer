@@ -201,4 +201,12 @@ public class TaskProcessor implements ITaskProcessor {
             holder.setState(state);
         }
     }
+
+    @Override
+    public void updateTask(ITask task) {
+        ITask task1 = getTask(task.getTaskId());
+        int i = mTasks.indexOf(task1);
+        mTasks.remove(task1);
+        addTask(task);
+    }
 }

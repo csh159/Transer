@@ -53,4 +53,6 @@ public interface ITaskProcessor {
     void changeTasksState(int state,String groupId);
 
     void changeAllTasksState(int state);
+
+    void updateTask(ITask task);
 }
