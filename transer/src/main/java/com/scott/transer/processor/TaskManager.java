@@ -1,14 +1,13 @@
 package com.scott.transer.processor;
 
-import android.util.Log;
-
 import com.scott.annotionprocessor.ITask;
+import com.scott.annotionprocessor.ProcessType;
 import com.scott.transer.task.ITaskInternalHandler;
+import com.scott.transer.task.ITaskHandlerListenner;
 import com.scott.transer.task.TaskState;
 import com.scott.annotionprocessor.TaskType;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
@@ -19,77 +18,100 @@ import java.util.concurrent.ExecutorService;
  * <p>Describe:</p>
  */
 
-public class TaskManager implements ITaskManager {
+public class TaskManager implements ITaskManager , ITaskHandlerListenner{
 
-    private ITaskProcessor mOperationProxy;
+    private ITaskProcessor mProcessorProxy;
     private ITaskProcessCallback mCallback;
     private Map<TaskType,ExecutorService> mThreadPool = new HashMap<>();
     private Map<TaskType,Class<? extends ITaskInternalHandler>> mTaskHandlers = new HashMap<>();
+    private Map<String,String> mParams;
+    private Map<String,String> mHeaders;
 
     @Override
     public void process(ITaskCmd cmd) {
         switch (cmd.getOperationType()) {
             case TYPE_ADD_TASKS:
-                mOperationProxy.addTasks(cmd.getTasks());
+                mProcessorProxy.addTasks(cmd.getTasks());
                 break;
             case TYPE_ADD_TASK:
-                mOperationProxy.addTask(cmd.getTask());
+                mProcessorProxy.addTask(cmd.getTask());
                 break;
             case TYPE_DELETE_TASK:
-                mOperationProxy.deleteTask(cmd.getTaskId());
+                mProcessorProxy.deleteTask(cmd.getTaskId());
                 break;
             case TYPE_DELETE_TASKS_SOME:
-                mOperationProxy.deleteTasks(cmd.getTaskIds());
+                mProcessorProxy.deleteTasks(cmd.getTaskIds());
                 break;
             case TYPE_DELETE_TASKS_GROUP:
-                mOperationProxy.deleteGroup(cmd.getGroupId());
+                mProcessorProxy.deleteGroup(cmd.getGroupId());
                 break;
             case TYPE_DELETE_TASKS_ALL:
-                mOperationProxy.deleteAll();
+                mProcessorProxy.deleteAll();
                 break;
             case TYPE_DELETE_TASKS_COMPLETED:
-                mOperationProxy.deleteCompleted();
+                mProcessorProxy.deleteCompleted();
                 break;
             case TYPE_DELETE_TASKS_STATE:
-                mOperationProxy.delete(cmd.getTask().getState());
+                mProcessorProxy.delete(cmd.getTask().getState());
                 break;
             case TYPE_CHANGE_TASK:
-                mOperationProxy.changeTasksState(cmd.getState(),cmd.getTaskIds());
+                mProcessorProxy.changeTasksState(cmd.getState(),cmd.getTaskIds());
                 break;
             case TYPE_CHANGE_TASK_GROUP:
-                mOperationProxy.changeTasksState(cmd.getState(),cmd.getGroupId());
+                mProcessorProxy.changeTasksState(cmd.getState(),cmd.getGroupId());
                 break;
             case TYPE_QUERY_TASK:
-                mOperationProxy.getTask(cmd.getTaskId());
+                mProcessorProxy.getTask(cmd.getTaskId());
                 break;
             case TYPE_QUERY_TASKS_SOME:
-                mOperationProxy.getTasks(cmd.getTaskIds());
+                mProcessorProxy.getTasks(cmd.getTaskIds());
                 break;
             case TYPE_QUERY_TASKS_ALL:
-                mOperationProxy.getAllTasks();
+                mProcessorProxy.getAllTasks();
                 break;
             case TYPE_QUERY_TASKS_COMPLETED:
-                mOperationProxy.getTasks(TaskState.STATE_FINISH);
+                mProcessorProxy.getTasks(TaskState.STATE_FINISH);
                 break;
             case TYPE_QUERY_TASKS_GROUP:
-                mOperationProxy.getGroup(cmd.getGroupId());
+                mProcessorProxy.getGroup(cmd.getGroupId());
                 break;
             case TYPE_QUERY_TASKS_STATE:
-                mOperationProxy.getTasks(cmd.getState());
+                mProcessorProxy.getTasks(cmd.getState());
                 break;
             case TASK_CHANGE_TASK_ALL:
-                mOperationProxy.changeAllTasksState(cmd.getState());
+                mProcessorProxy.changeAllTasksState(cmd.getState());
                 break;
             case TASK_CHANGE_TASK_SOME:
-                mOperationProxy.changeTasksState(cmd.getState(),cmd.getTaskIds());
+                mProcessorProxy.changeTasksState(cmd.getState(),cmd.getTaskIds());
                 break;
+            case INTERNAL_TASK_CHANGE_STATE: //handler call
+                internalChangeState(cmd.getTask().getState(),cmd.getTask());
+                mCallback.onFinished(cmd.getTask().getType(),cmd.getOperationType(),null);
+                return;
         }
         mCallback.onFinished(cmd.getTaskType(),cmd.getOperationType(),null);
     }
 
+    //handler state changed
+    private void internalChangeState(int state,ITask task) {
+        switch (state) {
+            case TaskState.STATE_FINISH:
+            case TaskState.STATE_START:
+            case TaskState.STATE_STOP:
+            case TaskState.STATE_ERROR:
+                mProcessorProxy.changeTaskState(state,task.getTaskId());
+                break;
+            case TaskState.STATE_PAUSE:
+            case TaskState.STATE_RUNNING:
+            case TaskState.STATE_RESUME:
+                mProcessorProxy.changeTaskStateWithOutSave(state,task.getTaskId());
+                break;
+        }
+    }
+
     @Override
     public void setTaskProcessor(ITaskProcessor operation) {
-        mOperationProxy = operation;
+        mProcessorProxy = operation;
     }
 
     @Override
@@ -113,6 +135,8 @@ public class TaskManager implements ITaskManager {
         try {
             ITaskInternalHandler taskHandler = handlerClzz.newInstance();
             taskHandler.setThreadPool(getTaskThreadPool(taskType));
+            taskHandler.setHeaders(mHeaders);
+            taskHandler.setParams(mParams);
             return taskHandler;
         } catch (InstantiationException e) {
             e.printStackTrace();
@@ -127,4 +151,60 @@ public class TaskManager implements ITaskManager {
         mTaskHandlers.put(type,handler);
     }
 
+    @Override
+    public void setHeaders(Map<String, String> headers) {
+        mHeaders = headers;
+    }
+
+    @Override
+    public void setParams(Map<String, String> params) {
+        mParams = params;
+    }
+
+    @Override
+    public void onStart(ITask params) {
+        mProcessorProxy.changeTasksState(TaskState.STATE_START,params.getTaskId());
+        mCallback.onFinished(params.getType(),ProcessType.TYPE_CHANGE_TASK,null);
+    }
+
+    @Override
+    public void onStop(ITask params) {
+        mProcessorProxy.changeTaskState(TaskState.STATE_START,params.getTaskId());
+        mCallback.onFinished(params.getType(),ProcessType.TYPE_CHANGE_TASK,null);
+    }
+
+    @Override
+    public void onError(int code, ITask params) {
+        mProcessorProxy.changeTaskState(TaskState.STATE_START,params.getTaskId());
+        mCallback.onFinished(params.getType(),ProcessType.TYPE_CHANGE_TASK,null);
+    }
+
+    @Override
+    public void onSpeedChanged(long speed, ITask params) {
+        mProcessorProxy.changeTaskStateWithOutSave(TaskState.STATE_START,params.getTaskId());
+        mCallback.onFinished(params.getType(),ProcessType.TYPE_CHANGE_TASK,null);
+    }
+
+    @Override
+    public void onPiceSuccessful(ITask params) {
+        mProcessorProxy.changeTaskState(TaskState.STATE_START,params.getTaskId());
+        mCallback.onFinished(params.getType(),ProcessType.TYPE_CHANGE_TASK,null);
+    }
+
+    @Override
+    public void onResume(ITask params) {
+        mProcessorProxy.changeTaskStateWithOutSave(TaskState.STATE_RESUME,params.getTaskId());
+        mCallback.onFinished(params.getType(),ProcessType.TYPE_CHANGE_TASK,null);
+    }
+
+    @Override
+    public void onPause(ITask params) {
+        mProcessorProxy.changeTaskStateWithOutSave(TaskState.STATE_PAUSE,params.getTaskId());
+        mCallback.onFinished(params.getType(),ProcessType.TYPE_CHANGE_TASK,null);
+    }
+
+    @Override
+    public void onFinished(ITask task) {
+        mCallback.onFinished(task.getType(),ProcessType.TYPE_CHANGE_TASK,null);
+    }
 }

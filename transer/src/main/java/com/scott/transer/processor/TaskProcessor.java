@@ -166,6 +166,11 @@ public class TaskProcessor implements ITaskProcessor {
     }
 
     @Override
+    public void changeTaskStateWithOutSave(int state, String taskId) {
+        changeTaskState(state,taskId);
+    }
+
+    @Override
     public void changeTasksState(int state, String[] taskId) {
         for(ITaskHolder holder : mTasks) {
             for(String id : taskId) {

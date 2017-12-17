@@ -46,6 +46,8 @@ public interface ITaskProcessor {
 
     void changeTaskState(int state,String taskId);
 
+    void changeTaskStateWithOutSave(int state,String taskId);
+
     void changeTasksState(int state,String[] taskId);
 
     void changeTasksState(int state,String groupId);

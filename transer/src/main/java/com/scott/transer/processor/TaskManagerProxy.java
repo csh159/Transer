@@ -2,12 +2,14 @@ package com.scott.transer.processor;
 
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.ITask;
+import com.scott.transer.task.ITaskHandlerListenner;
 import com.scott.transer.task.ITaskHolder;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.task.ITaskInternalHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,10 +23,10 @@ import java.util.concurrent.Executors;
 public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback{
 
     private ITaskManager mManager;
-    private ITaskProcessor mProcessor;
-    private ExecutorService mCmdThreadPool;
+    private ITaskProcessor mProcessor; //processor proxy
+    private ExecutorService mCmdThreadPool; //cmd thread pool
     private ITaskProcessCallback mProcessCallback;
-    private List<ITaskHolder> mTasks = new ArrayList<>();
+    private List<ITaskHolder> mTasks = new ArrayList<>(); //task list
 
     public TaskManagerProxy() {
         mCmdThreadPool = Executors.newSingleThreadExecutor();
@@ -62,7 +64,7 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
 
     @Override
     public void setThreadPool(TaskType taskType, ExecutorService threadPool) {
-
+        mManager.setThreadPool(taskType,threadPool);
     }
 
 
@@ -73,12 +75,23 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
 
     @Override
     public ITaskInternalHandler getTaskHandler(TaskType taskType) {
-        return mManager.getTaskHandler(taskType);
+        ITaskInternalHandler taskHandler = mManager.getTaskHandler(taskType);
+        return taskHandler;
     }
 
     @Override
     public void setTaskHandler(TaskType type, Class<? extends ITaskInternalHandler> handler) {
         mManager.setTaskHandler(type,handler);
+    }
+
+    @Override
+    public void setHeaders(Map<String, String> headers) {
+        mManager.setHeaders(headers);
+    }
+
+    @Override
+    public void setParams(Map<String, String> params) {
+        mManager.setParams(params);
     }
 
 
@@ -97,4 +110,5 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
 //        tasks = Arrays.asList(objects1);
         mProcessCallback.onFinished(taskType,processType,taskList);
     }
+
 }

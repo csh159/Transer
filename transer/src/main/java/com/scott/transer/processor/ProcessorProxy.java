@@ -139,6 +139,11 @@ public class ProcessorProxy implements ITaskProcessor {
     }
 
     @Override
+    public void changeTaskStateWithOutSave(int state, String taskId) {
+        mProcessor.changeTaskState(state,taskId);
+    }
+
+    @Override
     public void changeTasksState(int state, String[] taskId) {
         mProcessor.changeTasksState(state,taskId);
         mDbProcessor.changeTasksState(state,taskId);

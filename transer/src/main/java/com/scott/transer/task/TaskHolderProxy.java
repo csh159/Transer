@@ -55,7 +55,7 @@ public class TaskHolderProxy implements ITaskHolderProxy {
     }
 
     @Override
-    public void setTaskStateListener(ITaskStatusCallback callback) {
+    public void setTaskStateListener(ITaskHandlerListenner callback) {
 
     }
 

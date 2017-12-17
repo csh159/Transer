@@ -1,5 +1,10 @@
 package com.scott.transer.task;
 
+import com.scott.annotionprocessor.ITask;
+
+import java.io.IOError;
+import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -11,13 +16,11 @@ import java.util.concurrent.ExecutorService;
 
 public interface ITaskInternalHandler extends ITaskHolder{
 
-    void handle(String src,String dest);
+    void handle(ITask task) throws IOException;
 
-    int handlePice(String src,String dest,long start,long end);
+    boolean isPiceSuccessful();
 
-    boolean isPiceSuccessful(String response);
-
-    boolean isSuccessful(String response);
+    boolean isSuccessful();
 
     void setThreadPool(ExecutorService threadPool);
 
@@ -28,4 +31,14 @@ public interface ITaskInternalHandler extends ITaskHolder{
     void pause();
 
     void resume();
+
+    Map<String,String> getHeaders();
+
+    Map<String,String> getParams();
+
+    void setHeaders(Map<String,String> headers);
+
+    void setParams(Map<String,String> params);
+
+    void setHandlerListenner(ITaskHandlerListenner l);
 }

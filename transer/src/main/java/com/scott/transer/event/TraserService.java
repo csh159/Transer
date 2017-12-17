@@ -7,10 +7,8 @@ import android.support.annotation.Nullable;
 
 import com.scott.transer.dao.DaoHelper;
 import com.scott.transer.processor.ITaskCmd;
-import com.scott.transer.processor.ITaskManager;
 import com.scott.transer.processor.ITaskManagerProxy;
 import com.scott.transer.processor.ITaskProcessCallback;
-import com.scott.transer.processor.ITaskProcessor;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.transer.processor.ProcessorProxy;
 import com.scott.transer.processor.TaskDbProcessor;
@@ -19,10 +17,10 @@ import com.scott.transer.processor.TaskManagerProxy;
 import com.scott.transer.processor.TaskProcessor;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
-import com.scott.transer.task.DefaultDownloadHandler;
-import com.scott.transer.task.DefaultUploadHandler;
-import com.scott.transer.task.Task;
+import com.scott.transer.task.DefaultHttpDownloadHandler;
+import com.scott.transer.task.DefaultHttpUploadHandler;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -68,10 +66,12 @@ public class TraserService extends Service implements ITaskProcessCallback{
         mTaskManagerProxy.setProcessCallback(this);
         mTaskManagerProxy.setTaskProcessor(new ProcessorProxy(new TaskProcessor(),new TaskDbProcessor()));
         mTaskManagerProxy.setTaskManager(new TaskManager());
-        mTaskManagerProxy.setTaskHandler(TaskType.TYPE_DOWNLOAD, DefaultDownloadHandler.class);
-        mTaskManagerProxy.setTaskHandler(TaskType.TYPE_UPLOAD, DefaultUploadHandler.class);
+        mTaskManagerProxy.setTaskHandler(TaskType.TYPE_DOWNLOAD, DefaultHttpDownloadHandler.class);
+        mTaskManagerProxy.setTaskHandler(TaskType.TYPE_UPLOAD, DefaultHttpUploadHandler.class);
         mTaskManagerProxy.setThreadPool(TaskType.TYPE_UPLOAD, Executors.newFixedThreadPool(3));
         mTaskManagerProxy.setThreadPool(TaskType.TYPE_DOWNLOAD,Executors.newFixedThreadPool(3));
+        mTaskManagerProxy.setHeaders(new HashMap<String, String>());
+        mTaskManagerProxy.setParams(new HashMap<String, String>());
     }
 
     @Override

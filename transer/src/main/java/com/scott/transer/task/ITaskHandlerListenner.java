@@ -9,7 +9,7 @@ import com.scott.annotionprocessor.ITask;
  * <p>Describe:</p>
  */
 
-public interface ITaskStatusCallback {
+public interface ITaskHandlerListenner {
 
     void onStart(ITask params);
 
@@ -24,5 +24,7 @@ public interface ITaskStatusCallback {
     void onResume(ITask params);
 
     void onPause(ITask params);
+
+    void onFinished(ITask task);
 
 }

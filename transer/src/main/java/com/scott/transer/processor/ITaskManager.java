@@ -3,6 +3,7 @@ package com.scott.transer.processor;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.task.ITaskInternalHandler;
 
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -27,4 +28,8 @@ public interface ITaskManager {
     ITaskInternalHandler getTaskHandler(TaskType taskType);
 
     void setTaskHandler(TaskType type,Class<? extends ITaskInternalHandler> handler);
+
+    void setHeaders(Map<String,String> headers);
+
+    void setParams(Map<String,String> params);
 }
