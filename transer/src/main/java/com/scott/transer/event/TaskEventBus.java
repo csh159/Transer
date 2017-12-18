@@ -19,7 +19,7 @@ public class TaskEventBus {
     EventDispatcher mDispatcher;
     volatile static TaskEventBus sInstance;
 
-    public static void init(Context context) {
+    static void init(Context context) {
         synchronized (TaskEventBus.class) {
             if (sInstance == null) {
                 sInstance = new TaskEventBus(context);

@@ -31,7 +31,6 @@ class EventDispatcher implements ICmdEventDispatcher,ITaskEventDispatcher {
 
     private Queue<ITaskCmd> mCmdQueue = new ArrayDeque<>();
     private Context mContext;
-    private static ICmdEventDispatcher mCmdDispatcher;
     private List<Object> mScribers = new ArrayList<>();
     private Map<Object,TaskSubcriberParams> mScriberParams = new HashMap<>();
 
@@ -53,7 +52,6 @@ class EventDispatcher implements ICmdEventDispatcher,ITaskEventDispatcher {
 
     EventDispatcher(Context context) {
         mContext = context;
-        mCmdDispatcher = this;
     }
 
     @Override

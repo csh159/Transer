@@ -60,6 +60,7 @@ public class TraserService extends Service implements ITaskProcessCallback{
     @Override
     public void onCreate() {
         super.onCreate();
+        TaskEventBus.init(getApplicationContext());
         DaoHelper.init(getApplicationContext());
 
         mTaskManagerProxy = new TaskManagerProxy();

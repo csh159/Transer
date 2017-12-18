@@ -5,22 +5,24 @@ import com.scott.annotionprocessor.TaskType;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * <p>Author:    shijiale</p>
  * <p>Date:      2017-12-14 15:31</p>
  * <p>Email:     shilec@126.com</p>
- * <p>Describe:</p>
+ * <p>Describe:
+ *      如果实现其他的传输器需要继承自该类
+ * </p>
  */
-
 public abstract class BaseTaskHandler implements ITaskHandler {
 
     protected ITaskHandlerListenner mListenner;
-    private boolean isExit = false;
+    private volatile boolean isExit = false;
     private Map<String, String> mParams;
     private Map<String, String> mHeaders;
     private ExecutorService mTaskHandleThreadPool;
-    private Task mTask;
+    private volatile Task mTask;
     private HandleRunnable mHandleRunnable;
 
     public BaseTaskHandler() {
@@ -59,7 +61,6 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
     @Override
     public void setState(int state) { //user call
-        mTask.setState(state);
         _internalSetState(state);
     }
 
@@ -80,17 +81,22 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         }
     }
 
-
+    //判断一片是否发送或接受成功
     protected  abstract boolean isPiceSuccessful();
 
+    //判断任务是否成功
     protected abstract boolean isSuccessful();
 
+    //从数据源中读取一片
     protected abstract byte[] readPice(Task task) throws Exception;
 
+    //写入一片到目标
     protected abstract void writePice(byte[] datas,Task task) throws Exception;
 
+    //传输开始前
     protected abstract void prepare(Task task) throws Exception;
 
+    //当前这片从数据源中实际读取的大小
     protected abstract int getPiceRealSize();
 
     private void handle(ITask task) throws Exception {
@@ -130,27 +136,54 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
     @Override
     public void start() {
-        isExit = false;
-        mTaskHandleThreadPool.execute(mHandleRunnable);
-        mListenner.onStart(mTask);
+        synchronized (this) {
+            if(mTask.getState() == TaskState.STATE_START) {
+                throw new IllegalStateException("current handler already started ...");
+            }
+            //如果设置了线程池则会在线程池中传输，否则会在当前线程中开始传输
+            if (mTaskHandleThreadPool != null) {
+                mTaskHandleThreadPool.execute(mHandleRunnable);
+            } else {
+                mHandleRunnable.run();
+            }
+            mListenner.onStart(mTask);
+            mTask.setState(TaskState.STATE_START);
+        }
     }
 
     @Override
     public void stop() {
+
+        if(TaskState.STATE_STOP == mTask.getState()) {
+            return;
+        }
         isExit = true;
+        mTask.setState(TaskState.STATE_STOP);
         mListenner.onStop(mTask);
     }
 
     @Override
     public void pause() {
+        if(TaskState.STATE_PAUSE == mTask.getState()) {
+            return;
+        }
+        mTask.setState(TaskState.STATE_PAUSE);
         isExit = true;
         mListenner.onPause(mTask);
     }
 
     @Override
     public void resume() {
-        isExit = false;
-        mTaskHandleThreadPool.execute(mHandleRunnable);
+
+        if(mTask.getState() == TaskState.STATE_START) {
+            return;
+        }
+
+        if(mHandleRunnable != null) {
+            mHandleRunnable = new HandleRunnable();
+        }
+
+        start();
         mListenner.onResume(mTask);
     }
 
