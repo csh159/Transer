@@ -67,11 +67,11 @@ public class TaskDbProcessor implements ITaskProcessor {
 
     @Override
     public void deleteTasks(String[] taskIds) {
-        List<Task> tasks = mTaskDao
-                .queryBuilder()
-                .where(TaskDao.Properties.TaskId.in(taskIds))
-                .list();
-        mTaskDao.deleteInTx(tasks);
+//        List<Task> tasks = mTaskDao
+//                .queryBuilder()
+//                .where(TaskDao.Properties.TaskId.in(taskIds))
+//                .list();
+//        mTaskDao.deleteInTx(tasks);
     }
 
     @Override
@@ -107,13 +107,13 @@ public class TaskDbProcessor implements ITaskProcessor {
 
     @Override
     public List<ITask> getTasks(String[] taskIds) {
-        List<Task> tasks = mTaskDao
-                .queryBuilder()
-                .where(TaskDao.Properties.TaskId.in(taskIds))
-                .list();
-        List<ITask> tasks1 = new ArrayList<>();
-        tasks1.addAll(tasks);
-        return tasks1;
+//        List<Task> tasks = mTaskDao
+//                .queryBuilder()
+//                .where(TaskDao.Properties.TaskId.in(taskIds))
+//                .list();
+//        List<ITask> tasks1 = new ArrayList<>();
+//        tasks1.addAll(tasks);
+        return null;
     }
 
     @Override
@@ -164,15 +164,15 @@ public class TaskDbProcessor implements ITaskProcessor {
 
     @Override
     public void changeTasksState(int state, String[] taskId) {
-        List<Task> tasks = mTaskDao
-                .queryBuilder()
-                .where(TaskDao.Properties.TaskId.in(taskId))
-                .list();
-        for(Task task : tasks) {
-            task.setState(state);
-        }
+//        List<Task> tasks = mTaskDao
+//                .queryBuilder()
+//                .where(TaskDao.Properties.TaskId.in(taskId))
+//                .list();
+//        for(Task task : tasks) {
+//            task.setState(state);
+//        }
 
-        mTaskDao.updateInTx(tasks);
+        //mTaskDao.updateInTx(tasks);
     }
 
     @Override

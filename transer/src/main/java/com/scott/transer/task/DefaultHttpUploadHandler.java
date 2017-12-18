@@ -87,16 +87,22 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
         mResponse = body.string();
     }
 
+
     @Override
-    protected void prepare(Task task) throws IOException{
+    protected void prepare(ITask task) throws IOException{
         mFile = new RandomAccessFile(task.getDataSource(),"rw");
-        task.setLength(mFile.length());
+        //task.setLength(mFile.length());
         mFile.seek(task.getCompleteLength());
-        task.setStartOffset(task.getCompleteLength());
+        //task.setStartOffset(task.getCompleteLength());
     }
 
     @Override
     protected int getPiceRealSize() {
         return mPiceRealSize;
+    }
+
+    @Override
+    protected long fileSize() {
+        return 0;
     }
 }

@@ -1,6 +1,8 @@
 package com.scott.transer.task;
 
+import com.scott.annotionprocessor.ITask;
 import com.scott.transer.http.OkHttpProxy;
+import com.scott.transer.utils.Debugger;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +30,7 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
     private InputStream mInputStream;
     private final int MAX_PICE_SIZE = 1 * 1024 * 1024;
     private int mPiceSize = 0;
+    private long mFileSize = 0;
 
     @Override
     public boolean isPiceSuccessful() {
@@ -46,6 +49,8 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
             mFile.close();
             mInputStream.close();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
     }
@@ -66,32 +71,27 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
     }
 
     @Override
-    protected void prepare(Task task) throws Exception {
+    protected void prepare(ITask task) throws Exception {
 
         String path = task.getName() == null ? task.getDestSource() :
                 task.getDestSource() + File.separator + task.getName();
         mFile = new RandomAccessFile(path,"rw");
-        long netSize = getNetSize(task.getDataSource());
-        if(mFile.length() == netSize && netSize != 0) {
+        mFileSize = getNetSize(task.getDataSource());
+
+        if(mFile.length() == mFileSize && mFileSize != 0) {
             stop();
             return;
         }
-        if(mFile.length() < netSize && mFile.length() != 0) {
-            task.setCompleteLength(mFile.length());
-        }
+        Debugger.info(DefaultHttpDownloadHandler.class.getSimpleName(),"=================== fileLength = " + mFile.length());
 
-        if(task.getCompleteLength() != 0) {
-            mFile.seek(task.getCompleteLength() - 1);
+        if(task.getStartOffset() != 0) {
+            mFile.seek(task.getStartOffset());
         }
-
-        task.setLength(netSize);
-        task.setStartOffset(task.getCompleteLength());
-        task.setEndOffset(task.getLength());
 
         Request request = new Request.Builder()
                 .url(task.getDataSource())
                 .header("Range","bytes=" +
-                        task.getStartOffset() + "-" + task.getLength())
+                        task.getStartOffset() + "-" + mFileSize)
                 .build();
         OkHttpClient client = OkHttpProxy.getClient();
         Call call = client.newCall(request);
@@ -108,6 +108,11 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
     @Override
     protected int getPiceRealSize() {
         return mPiceSize;
+    }
+
+    @Override
+    protected long fileSize() {
+        return mFileSize;
     }
 
     private long getNetSize(String src) throws Exception {
