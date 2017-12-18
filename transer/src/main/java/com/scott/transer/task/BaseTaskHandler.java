@@ -3,10 +3,6 @@ package com.scott.transer.task;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
@@ -17,7 +13,7 @@ import java.util.concurrent.ExecutorService;
  * <p>Describe:</p>
  */
 
-public abstract class BaseTaskHandler implements ITaskInternalHandler {
+public abstract class BaseTaskHandler implements ITaskHandler {
 
     protected ITaskHandlerListenner mListenner;
     private boolean isExit = false;
@@ -84,21 +80,36 @@ public abstract class BaseTaskHandler implements ITaskInternalHandler {
         }
     }
 
-    protected abstract byte[] readPice(Task task) throws IOException;
 
-    protected abstract void writePice(byte[] datas,Task task) throws IOException;
+    protected  abstract boolean isPiceSuccessful();
 
-    protected abstract void prepare(Task task) throws IOException;
+    protected abstract boolean isSuccessful();
 
-    @Override
-    public void handle(ITask task) throws IOException {
+    protected abstract byte[] readPice(Task task) throws Exception;
 
+    protected abstract void writePice(byte[] datas,Task task) throws Exception;
+
+    protected abstract void prepare(Task task) throws Exception;
+
+    protected abstract int getPiceRealSize();
+
+    private void handle(ITask task) throws Exception {
         prepare((Task) task);
+
         while (!isExit) {
             byte[] datas = readPice((Task) task);
-            writePice(datas, (Task) task);
-            mTask.setCompleteLength(mTask.getEndOffset());
-            mTask.setStartOffset(mTask.getEndOffset());
+            int size = getPiceRealSize();
+
+            if(size == -1) {
+                isExit = true;
+                break;
+            }
+
+            ((Task) task).setEndOffset(task.getStartOffset() + size);
+            writePice(datas,(Task) task);
+            mTask.setCompleteLength(mTask.getCompleteLength() + size);
+            mTask.setStartOffset(mTask.getCompleteLength());
+
             if(isPiceSuccessful()) {
                 mListenner.onPiceSuccessful(mTask);
             } else {
@@ -106,17 +117,15 @@ public abstract class BaseTaskHandler implements ITaskInternalHandler {
                 isExit = true;
                 break;
             }
-
-            if(!isSuccessful()) {
-                mListenner.onError(TaskErrorCode.ERROR_FINISH,mTask);
-                isExit = true;
-                break;
-            } else {
-                mListenner.onFinished(mTask);
-                isExit = true;
-                break;
-            }
         }
+
+        if(!isSuccessful()) {
+            mListenner.onError(TaskErrorCode.ERROR_FINISH,mTask);
+        } else {
+            mListenner.onFinished(mTask);
+        }
+
+        release();
     }
 
     @Override
@@ -145,6 +154,10 @@ public abstract class BaseTaskHandler implements ITaskInternalHandler {
         mListenner.onResume(mTask);
     }
 
+    protected void release() {
+        isExit = true;
+    }
+
     @Override
     public int getState() {
         return mTask.getState();
@@ -171,7 +184,7 @@ public abstract class BaseTaskHandler implements ITaskInternalHandler {
         public void run() {
             try {
                 handle(mTask);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 mListenner.onError(TaskErrorCode.ERROR_CODE_EXCEPTION,mTask);
             }

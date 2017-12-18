@@ -2,7 +2,7 @@ package com.scott.transer.processor;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
-import com.scott.transer.task.ITaskInternalHandler;
+import com.scott.transer.task.ITaskHandler;
 import com.scott.transer.task.ITaskHandlerListenner;
 import com.scott.transer.task.TaskState;
 import com.scott.annotionprocessor.TaskType;
@@ -23,7 +23,7 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
     private ITaskProcessor mProcessorProxy;
     private ITaskProcessCallback mCallback;
     private Map<TaskType,ExecutorService> mThreadPool = new HashMap<>();
-    private Map<TaskType,Class<? extends ITaskInternalHandler>> mTaskHandlers = new HashMap<>();
+    private Map<TaskType,Class<? extends ITaskHandler>> mTaskHandlers = new HashMap<>();
     private Map<String,String> mParams;
     private Map<String,String> mHeaders;
 
@@ -84,29 +84,8 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
             case TASK_CHANGE_TASK_SOME:
                 mProcessorProxy.changeTasksState(cmd.getState(),cmd.getTaskIds());
                 break;
-            case INTERNAL_TASK_CHANGE_STATE: //handler call
-                internalChangeState(cmd.getTask().getState(),cmd.getTask());
-                mCallback.onFinished(cmd.getTask().getType(),cmd.getOperationType(),null);
-                return;
         }
         mCallback.onFinished(cmd.getTaskType(),cmd.getOperationType(),null);
-    }
-
-    //handler state changed
-    private void internalChangeState(int state,ITask task) {
-        switch (state) {
-            case TaskState.STATE_FINISH:
-            case TaskState.STATE_START:
-            case TaskState.STATE_STOP:
-            case TaskState.STATE_ERROR:
-                mProcessorProxy.changeTaskState(state,task.getTaskId());
-                break;
-            case TaskState.STATE_PAUSE:
-            case TaskState.STATE_RUNNING:
-            case TaskState.STATE_RESUME:
-                mProcessorProxy.changeTaskStateWithOutSave(state,task.getTaskId());
-                break;
-        }
     }
 
     @Override
@@ -130,10 +109,10 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
     }
 
     @Override
-    public ITaskInternalHandler getTaskHandler(TaskType taskType) {
-        Class<? extends ITaskInternalHandler> handlerClzz = mTaskHandlers.get(taskType);
+    public ITaskHandler getTaskHandler(TaskType taskType) {
+        Class<? extends ITaskHandler> handlerClzz = mTaskHandlers.get(taskType);
         try {
-            ITaskInternalHandler taskHandler = handlerClzz.newInstance();
+            ITaskHandler taskHandler = handlerClzz.newInstance();
             taskHandler.setThreadPool(getTaskThreadPool(taskType));
             taskHandler.setHeaders(mHeaders);
             taskHandler.setParams(mParams);
@@ -147,7 +126,7 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
     }
 
     @Override
-    public void setTaskHandler(TaskType type, Class<? extends ITaskInternalHandler> handler) {
+    public void setTaskHandler(TaskType type, Class<? extends ITaskHandler> handler) {
         mTaskHandlers.put(type,handler);
     }
 
@@ -181,13 +160,13 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
 
     @Override
     public void onSpeedChanged(long speed, ITask params) {
-        mProcessorProxy.changeTaskStateWithOutSave(TaskState.STATE_START,params.getTaskId());
+        mProcessorProxy.updateTaskWithoutSave(params);
         mCallback.onFinished(params.getType(),ProcessType.TYPE_CHANGE_TASK,null);
     }
 
     @Override
     public void onPiceSuccessful(ITask params) {
-        mProcessorProxy.changeTaskState(TaskState.STATE_START,params.getTaskId());
+        mProcessorProxy.updateTask(params);
         mCallback.onFinished(params.getType(),ProcessType.TYPE_CHANGE_TASK,null);
     }
 
@@ -205,6 +184,7 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
 
     @Override
     public void onFinished(ITask task) {
+        mProcessorProxy.updateTask(task);
         mCallback.onFinished(task.getType(),ProcessType.TYPE_CHANGE_TASK,null);
     }
 }

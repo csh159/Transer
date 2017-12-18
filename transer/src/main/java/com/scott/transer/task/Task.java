@@ -31,6 +31,7 @@ public class Task implements ITask {
     private long completeTime;
     private long completeLength;
     private int state;
+    private String name;
 
     public static final class TaskTypeConverter implements PropertyConverter<TaskType,Integer> {
 
@@ -83,12 +84,13 @@ public class Task implements ITask {
         this.state = builder.getState();
         this.type = builder.getType();
         this.userId = builder.getUserId();
+        this.name = builder.getName();
     }
 
-    @Generated(hash = 1763193761)
+    @Generated(hash = 420318931)
     public Task(String dataSource, String destSource, String sesstionId, long length, long startOffset,
             long endOffset, String taskId, String groupId, String groupName, long completeTime,
-            long completeLength, int state, TaskType type, String userId) {
+            long completeLength, int state, String name, TaskType type, String userId) {
         this.dataSource = dataSource;
         this.destSource = destSource;
         this.sesstionId = sesstionId;
@@ -101,6 +103,7 @@ public class Task implements ITask {
         this.completeTime = completeTime;
         this.completeLength = completeLength;
         this.state = state;
+        this.name = name;
         this.type = type;
         this.userId = userId;
     }
@@ -179,6 +182,11 @@ public class Task implements ITask {
         return userId;
     }
 
+    @Override
+    public String getName() {
+        return name;
+    }
+
     public void setDataSource(String dataSource) {
         this.dataSource = dataSource;
     }
@@ -235,5 +243,27 @@ public class Task implements ITask {
         this.userId = userId;
     }
 
+    @Override
+    public String toString() {
+        return "Task{" +
+                "dataSource='" + dataSource + '\'' +
+                ", destSource='" + destSource + '\'' +
+                ", sesstionId='" + sesstionId + '\'' +
+                ", length=" + length +
+                ", startOffset=" + startOffset +
+                ", endOffset=" + endOffset +
+                ", taskId='" + taskId + '\'' +
+                ", groupId='" + groupId + '\'' +
+                ", groupName='" + groupName + '\'' +
+                ", completeTime=" + completeTime +
+                ", completeLength=" + completeLength +
+                ", state=" + state +
+                ", type=" + type +
+                ", userId='" + userId + '\'' +
+                '}';
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 }

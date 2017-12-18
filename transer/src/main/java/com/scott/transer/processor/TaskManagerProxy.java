@@ -2,10 +2,9 @@ package com.scott.transer.processor;
 
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.ITask;
-import com.scott.transer.task.ITaskHandlerListenner;
 import com.scott.transer.task.ITaskHolder;
 import com.scott.annotionprocessor.TaskType;
-import com.scott.transer.task.ITaskInternalHandler;
+import com.scott.transer.task.ITaskHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,13 +73,13 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
     }
 
     @Override
-    public ITaskInternalHandler getTaskHandler(TaskType taskType) {
-        ITaskInternalHandler taskHandler = mManager.getTaskHandler(taskType);
+    public ITaskHandler getTaskHandler(TaskType taskType) {
+        ITaskHandler taskHandler = mManager.getTaskHandler(taskType);
         return taskHandler;
     }
 
     @Override
-    public void setTaskHandler(TaskType type, Class<? extends ITaskInternalHandler> handler) {
+    public void setTaskHandler(TaskType type, Class<? extends ITaskHandler> handler) {
         mManager.setTaskHandler(type,handler);
     }
 

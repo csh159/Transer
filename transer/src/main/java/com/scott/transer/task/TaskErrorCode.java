@@ -15,4 +15,6 @@ public interface TaskErrorCode {
     int ERROR_FINISH = 0X100003;
 
     int ERROR_CODE_EXCEPTION = 0X100004;
+
+    int ERROR_CODE_NETWORK = 0X100005;
 }

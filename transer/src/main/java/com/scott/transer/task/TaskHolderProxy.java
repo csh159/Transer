@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutorService;
 
 public class TaskHolderProxy implements ITaskHolderProxy {
 
-    private ITaskInternalHandler mHandler;
+    private ITaskHandler mHandler;
 
     @Override
     public void setState(int state) {
@@ -55,12 +55,7 @@ public class TaskHolderProxy implements ITaskHolderProxy {
     }
 
     @Override
-    public void setTaskStateListener(ITaskHandlerListenner callback) {
-
-    }
-
-    @Override
-    public void setTaskHandler(ITaskInternalHandler handler) {
+    public void setTaskHandler(ITaskHandler handler) {
 
     }
 
@@ -70,7 +65,7 @@ public class TaskHolderProxy implements ITaskHolderProxy {
     }
 
     @Override
-    public ITaskInternalHandler getTaskHandler() {
+    public ITaskHandler getTaskHandler() {
         return null;
     }
 }

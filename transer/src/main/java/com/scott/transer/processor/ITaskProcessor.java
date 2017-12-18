@@ -55,4 +55,6 @@ public interface ITaskProcessor {
     void changeAllTasksState(int state);
 
     void updateTask(ITask task);
+
+    void updateTaskWithoutSave(ITask task);
 }

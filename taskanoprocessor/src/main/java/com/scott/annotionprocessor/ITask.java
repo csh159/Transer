@@ -38,4 +38,6 @@ public interface ITask {
     TaskType getType();
 
     String getUserId();
+
+    String getName();
 }

@@ -14,13 +14,7 @@ import java.util.concurrent.ExecutorService;
  * <p>Describe:</p>
  */
 
-public interface ITaskInternalHandler extends ITaskHolder{
-
-    void handle(ITask task) throws IOException;
-
-    boolean isPiceSuccessful();
-
-    boolean isSuccessful();
+public interface ITaskHandler extends ITaskHolder{
 
     void setThreadPool(ExecutorService threadPool);
 

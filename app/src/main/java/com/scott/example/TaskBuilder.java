@@ -92,6 +92,11 @@ public class TaskBuilder implements ITaskBuilder {
     }
 
     @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
     public ITaskBuilder setDataSource(String dataSource) {
         this.dataSource = dataSource;
         return this;
@@ -167,6 +172,11 @@ public class TaskBuilder implements ITaskBuilder {
 
     @Override
     public ITaskBuilder setTask(ITask task) {
+        return null;
+    }
+
+    @Override
+    public ITaskBuilder setName(String name) {
         return null;
     }
 }

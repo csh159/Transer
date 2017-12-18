@@ -30,6 +30,7 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
     private RandomAccessFile mFile;
     private final long MAX_PICE_SIZE = 1 * 1024 * 1024;
     private String mResponse;
+    private int mPiceRealSize = 0;
 
     @Override
     public boolean isPiceSuccessful() {
@@ -56,12 +57,13 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
         }
 
         byte[] datas = new byte[(int) MAX_PICE_SIZE];
-        mFile.read(datas,(int)task.getStartOffset(),(int)task.getEndOffset());
+        mPiceRealSize = mFile.read(datas,(int)task.getStartOffset(),(int)task.getEndOffset());
         return datas;
     }
 
     @Override
     protected void writePice(byte[] datas, Task task) throws IOException{
+
         RequestBody fileBody = new UploadStreamRequestBody("application/octet-stream",
                 mFile,task.getStartOffset(),task.getEndOffset());
 
@@ -90,5 +92,11 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
         mFile = new RandomAccessFile(task.getDataSource(),"rw");
         task.setLength(mFile.length());
         mFile.seek(task.getCompleteLength());
+        task.setStartOffset(task.getCompleteLength());
+    }
+
+    @Override
+    protected int getPiceRealSize() {
+        return mPiceRealSize;
     }
 }

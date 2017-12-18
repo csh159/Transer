@@ -41,4 +41,6 @@ public interface ITaskBuilder extends ITask {
     ITask build();
 
     ITaskBuilder setTask(ITask task);
+
+    ITaskBuilder setName(String name);
 }

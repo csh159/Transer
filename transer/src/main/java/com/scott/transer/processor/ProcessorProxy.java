@@ -166,4 +166,9 @@ public class ProcessorProxy implements ITaskProcessor {
         mProcessor.updateTask(task);
         mDbProcessor.updateTask(task);
     }
+
+    @Override
+    public void updateTaskWithoutSave(ITask task) {
+        mProcessor.updateTaskWithoutSave(task);
+    }
 }

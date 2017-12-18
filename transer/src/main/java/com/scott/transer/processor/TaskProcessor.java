@@ -3,7 +3,7 @@ package com.scott.transer.processor;
 import com.scott.annotionprocessor.ITask;
 import com.scott.transer.task.ITaskHolder;
 import com.scott.transer.task.ITaskHolderProxy;
-import com.scott.transer.task.ITaskInternalHandler;
+import com.scott.transer.task.ITaskHandler;
 import com.scott.transer.task.TaskHolderProxy;
 import com.scott.transer.task.TaskState;
 
@@ -186,7 +186,7 @@ public class TaskProcessor implements ITaskProcessor {
         for(ITaskHolder holder : mTasks) {
             if(holder.getTask().getGroupId() == groupId) {
                 if(((ITaskHolderProxy)holder).getTaskHandler() == null) {
-                    ITaskInternalHandler handler = mTaskManager.getTaskHandler(holder.getType());
+                    ITaskHandler handler = mTaskManager.getTaskHandler(holder.getType());
                     handler.setTask(holder.getTask());
                     ((ITaskHolderProxy)holder).setTaskHandler(handler);
                 }
@@ -204,9 +204,17 @@ public class TaskProcessor implements ITaskProcessor {
 
     @Override
     public void updateTask(ITask task) {
-        ITask task1 = getTask(task.getTaskId());
-        int i = mTasks.indexOf(task1);
-        mTasks.remove(task1);
-        addTask(task);
+        for(ITaskHolder holder : mTasks) {
+            ITask task1 = holder.getTask();
+            if(task1.getTaskId() == task.getTaskId()) {
+                holder.setTask(task);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void updateTaskWithoutSave(ITask task) {
+        updateTask(task);
     }
 }
