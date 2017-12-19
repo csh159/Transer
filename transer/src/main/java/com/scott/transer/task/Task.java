@@ -13,7 +13,9 @@ import org.greenrobot.greendao.annotation.Generated;
  * <p>Author:    shijiale</p>
  * <p>Date:      2017-12-14 17:51</p>
  * <p>Email:     shilec@126.com</p>
- * <p>Describe:</p>
+ * <p>Describe:
+ *  携带自定义参数需要继承自该类
+ * </p>
  */
 
 @Entity
@@ -266,4 +268,5 @@ public class Task implements ITask {
     public void setName(String name) {
         this.name = name;
     }
+
 }

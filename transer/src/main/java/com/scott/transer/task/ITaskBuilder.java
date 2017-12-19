@@ -28,7 +28,7 @@ public interface ITaskBuilder extends ITask {
 
     ITaskBuilder setGroupName(String groupName);
 
-    ITaskBuilder setCompleteTime(String completeTime);
+    ITaskBuilder setCompleteTime(long completeTime);
 
     ITaskBuilder setCompleteLength(long length);
 
@@ -43,4 +43,8 @@ public interface ITaskBuilder extends ITask {
     ITaskBuilder setTask(ITask task);
 
     ITaskBuilder setName(String name);
+
+    ITaskBuilder setTaskId(String taskId);
+
+    ITaskBuilder setSessionId(String sesstionId);
 }

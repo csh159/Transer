@@ -10,7 +10,7 @@ import com.scott.transer.processor.ITaskCmd;
 import com.scott.transer.processor.ITaskManagerProxy;
 import com.scott.transer.processor.ITaskProcessCallback;
 import com.scott.annotionprocessor.ProcessType;
-import com.scott.transer.processor.ProcessorProxy;
+import com.scott.transer.processor.TaskProcessorProxy;
 import com.scott.transer.processor.TaskDbProcessor;
 import com.scott.transer.processor.TaskManager;
 import com.scott.transer.processor.TaskManagerProxy;
@@ -65,7 +65,7 @@ public class TraserService extends Service implements ITaskProcessCallback{
 
         mTaskManagerProxy = new TaskManagerProxy();
         mTaskManagerProxy.setProcessCallback(this);
-        mTaskManagerProxy.setTaskProcessor(new ProcessorProxy(new TaskProcessor(),new TaskDbProcessor()));
+        mTaskManagerProxy.setTaskProcessor(new TaskProcessorProxy(new TaskProcessor(),new TaskDbProcessor()));
         mTaskManagerProxy.setTaskManager(new TaskManager());
         mTaskManagerProxy.setTaskHandler(TaskType.TYPE_DOWNLOAD, DefaultHttpDownloadHandler.class);
         mTaskManagerProxy.setTaskHandler(TaskType.TYPE_UPLOAD, DefaultHttpUploadHandler.class);

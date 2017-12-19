@@ -15,18 +15,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
-
-        </activity>
-
-        <service android:name="com.scott.transer.event.TraserService" />
-
-        <activity android:name=".OnlyDownloadActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name="com.scott.transer.event.TraserService" />
+
+        <activity android:name=".SimpleDownloadActivity">
+        </activity>
+        <activity android:name=".SimpleUploadActivity"></activity>
     </application>
 
 </manifest>

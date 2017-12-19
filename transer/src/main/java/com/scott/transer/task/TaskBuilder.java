@@ -1,4 +1,4 @@
-package com.scott.example;
+package com.scott.transer.task;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
@@ -19,7 +19,33 @@ public class TaskBuilder implements ITaskBuilder {
 
     private String destSource;
 
+    private long length;
+
+    private long startOffset;
+
+    private long endOffset;
+
+    private String tasksId;
+
+    private String sessionId;
+
+    private String groupId;
+
+    private String groupName;
+
+    private long completeTime;
+
+    private long completeLength;
+
+    private int state;
+
+    private String userId;
+
+    private String name;
+
     private TaskType taskType = TaskType.TYPE_UPLOAD;
+
+    private ITask task;
 
     @Override
     public String getDataSource() {
@@ -33,52 +59,52 @@ public class TaskBuilder implements ITaskBuilder {
 
     @Override
     public String getSesstionId() {
-        return System.currentTimeMillis() + "";
+        return sessionId;
     }
 
     @Override
     public long getLength() {
-        return 0;
+        return length;
     }
 
     @Override
     public long getStartOffset() {
-        return 0;
+        return startOffset;
     }
 
     @Override
     public long getEndOffset() {
-        return 0;
+        return endOffset;
     }
 
     @Override
     public String getTaskId() {
-        return getSesstionId();
+        return tasksId;
     }
 
     @Override
     public String getGroupId() {
-        return null;
+        return groupId;
     }
 
     @Override
     public String getGroupName() {
-        return null;
+        return groupName;
     }
 
     @Override
     public long getCompleteTime() {
-        return 0;
+        return completeTime;
     }
 
     @Override
     public long getCompleteLength() {
-        return 0;
+        return completeLength;
     }
 
     @Override
     public int getState() {
-        return 0;
+        return state;
     }
 
     @Override
@@ -88,12 +114,12 @@ public class TaskBuilder implements ITaskBuilder {
 
     @Override
     public String getUserId() {
-        return null;
+        return userId;
     }
 
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     @Override
@@ -110,47 +136,56 @@ public class TaskBuilder implements ITaskBuilder {
 
     @Override
     public ITaskBuilder setSesstionId(String sesstionId) {
-        return null;
+        this.sessionId = sesstionId;
+        return this;
     }
 
     @Override
     public ITaskBuilder setLength(long length) {
-        return null;
+        this.length = length;
+        return this;
     }
 
     @Override
     public ITaskBuilder setStartoffset(long offset) {
-        return null;
+        this.startOffset = offset;
+        return this;
     }
 
     @Override
     public ITaskBuilder setEndOffset(long offset) {
-        return null;
+        this.endOffset = offset;
+        return this;
     }
 
     @Override
     public ITaskBuilder setGroupId(String groupId) {
-        return null;
+        this.groupId = groupId;
+        return this;
     }
 
     @Override
     public ITaskBuilder setGroupName(String groupName) {
-        return null;
+        this.groupName = groupName;
+        return this;
     }
 
     @Override
-    public ITaskBuilder setCompleteTime(String completeTime) {
-        return null;
+    public ITaskBuilder setCompleteTime(long completeTime) {
+        this.completeTime = completeTime;
+        return this;
     }
 
     @Override
     public ITaskBuilder setCompleteLength(long length) {
-        return null;
+        this.completeLength = length;
+        return this;
     }
 
     @Override
     public ITaskBuilder setState(int state) {
-        return null;
+        this.state = state;
+        return this;
     }
 
     @Override
@@ -161,22 +196,40 @@ public class TaskBuilder implements ITaskBuilder {
 
     @Override
     public ITaskBuilder setUserId(String userId) {
-        return null;
+        this.userId = userId;
+        return this;
     }
 
     @Override
     public ITask build() {
-        ITask task = new Task(this);
+        if(task != null) {
+            return task;
+        }
+        task = new Task(this);
         return task;
     }
 
     @Override
     public ITaskBuilder setTask(ITask task) {
-        return null;
+        this.task = task;
+        return this;
     }
 
     @Override
     public ITaskBuilder setName(String name) {
-        return null;
+        this.name = name;
+        return this;
+    }
+
+    @Override
+    public ITaskBuilder setTaskId(String taskId) {
+        this.tasksId = taskId;
+        return this;
+    }
+
+    @Override
+    public ITaskBuilder setSessionId(String sesstionId) {
+        this.sessionId = sesstionId;
+        return this;
     }
 }

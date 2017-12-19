@@ -16,23 +16,23 @@ public class TaskCmd implements ITaskCmd{
 
     private ITaskCmdBuilder mBuilder;
 
-    public TaskCmd(ITaskCmdBuilder builder) {
+    TaskCmd(ITaskCmdBuilder builder) {
         mBuilder = builder;
     }
 
     @Override
     public String getTaskId() {
-        return null;
+        return mBuilder.getTaskId();
     }
 
     @Override
     public String getGroupId() {
-        return null;
+        return mBuilder.getGroupId();
     }
 
     @Override
     public int getState() {
-        return 0;
+        return mBuilder.getState();
     }
 
     @Override
@@ -47,7 +47,7 @@ public class TaskCmd implements ITaskCmd{
 
     @Override
     public String[] getTaskIds() {
-        return new String[0];
+        return mBuilder.getTaskIds();
     }
 
     @Override

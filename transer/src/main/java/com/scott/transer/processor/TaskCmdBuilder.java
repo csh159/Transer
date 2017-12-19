@@ -1,4 +1,4 @@
-package com.scott.example;
+package com.scott.transer.processor;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;

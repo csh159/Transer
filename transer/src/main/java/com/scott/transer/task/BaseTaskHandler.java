@@ -25,10 +25,16 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     private ExecutorService mTaskHandleThreadPool;
     private volatile Task mTask;
     private HandleRunnable mHandleRunnable;
+    private final long  MAX_DELAY_TIME = 300;
     private final String TAG = BaseTaskHandler.class.getSimpleName();
+
+    private long mLastCompleteLength = 0;
+    private StateRunnable mStateRunnable;
+    private Thread mStateThread;
 
     public BaseTaskHandler() {
         mHandleRunnable = new HandleRunnable();
+        mStateRunnable = new StateRunnable();
     }
 
     @Override
@@ -105,6 +111,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
     private void handle(ITask task) throws Exception {
 
+        mLastCompleteLength = task.getCompleteLength();
         ((Task)task).setStartOffset(task.getCompleteLength()); //每次开始之前设置起始偏移量
         //开始任务前准备任务数据，初始化源数据流
         prepare(task);
@@ -155,15 +162,11 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     public void start() {
         synchronized (this) {
             //如果任务已经开始或完成则不重复开始
-            if(mTask.getState() == TaskState.STATE_START ||
-                    mTask.getState() != TaskState.STATE_FINISH) {
+            if(mTask.getState() == TaskState.STATE_START || isExit) {
                 //throw new IllegalStateException("current handler already started ...");
                 Debugger.error(TAG,"current handler already started ...");
                 return;
             }
-
-            //如果是恢复任务，则释放资源(如果不释放，网络流可能超时无法使用)
-            release();
 
             //如果设置了线程池则会在线程池中传输，否则会在当前线程中开始传输
             if (mTaskHandleThreadPool != null) {
@@ -171,6 +174,9 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             } else {
                 mHandleRunnable.run();
             }
+
+            mStateThread = new Thread(mStateRunnable);
+            mStateThread.start();
             mListenner.onStart(mTask);
             mTask.setState(TaskState.STATE_START);
         }
@@ -264,4 +270,37 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             }
         }
     }
-}
+
+    //当前实际完成的长度，这个数值是比较及时的，可以用来显示速度和进度的变化
+    protected  long getCurrentCompleteLength() {
+        return mTask.getCompleteLength();
+    }
+
+    class StateRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            while (!isExit) {
+                try {
+                    ITask task = new TaskBuilder()
+                            .setTaskId(mTask.getTaskId())
+                            .setDestSource(mTask.getDestSource())
+                            .setDataSource(mTask.getDataSource())
+                            .setCompleteLength(getCurrentCompleteLength())
+                            .setTaskType(mTask.getType())
+                            .setLength(mTask.getLength())
+                            .setGroupName(mTask.getGroupName())
+                            .setState(mTask.getState())
+                            .setGroupId(mTask.getGroupId())
+                            .build();
+
+                    mListenner.onSpeedChanged((long) ((getCurrentCompleteLength() - mLastCompleteLength) / ( MAX_DELAY_TIME / 1000f)), task);
+                    mLastCompleteLength = getCurrentCompleteLength();
+                    Thread.sleep(MAX_DELAY_TIME);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+ }
