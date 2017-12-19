@@ -1,6 +1,7 @@
 package com.scott.transer.processor;
 
 import com.scott.annotionprocessor.ITask;
+import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.task.ITaskHolder;
 
 import java.util.List;
@@ -76,10 +77,11 @@ public class TaskProcessorProxy implements ITaskProcessor {
         mDbProcessor.delete(state);
     }
 
+
     @Override
-    public void deleteAll() {
-        mProcessor.deleteAll();
-        mDbProcessor.deleteAll();
+    public void deleteAll(TaskType type) {
+        mProcessor.deleteAll(type);
+        mDbProcessor.deleteAll(type);
     }
 
     @Override

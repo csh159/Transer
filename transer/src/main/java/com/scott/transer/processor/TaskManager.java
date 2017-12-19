@@ -3,13 +3,18 @@ package com.scott.transer.processor;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.transer.task.ITaskHandler;
+import com.scott.transer.task.ITaskHandlerHolder;
 import com.scott.transer.task.ITaskHandlerListenner;
+import com.scott.transer.task.ITaskHolder;
 import com.scott.transer.task.TaskState;
 import com.scott.annotionprocessor.TaskType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * <p>Author:    shijiale</p>
@@ -22,10 +27,12 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
 
     private ITaskProcessor mProcessorProxy;
     private ITaskProcessCallback mCallback;
-    private Map<TaskType,ExecutorService> mThreadPool = new HashMap<>();
+    private Map<TaskType,ThreadPoolExecutor> mThreadPool = new HashMap<>();
     private Map<TaskType,Class<? extends ITaskHandler>> mTaskHandlers = new HashMap<>();
     private Map<String,String> mParams;
     private Map<String,String> mHeaders;
+    private List<ITaskHolder> mTasks = new ArrayList<>(); //task list
+
 
     @Override
     public void process(ITaskCmd cmd) {
@@ -46,7 +53,7 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
                 mProcessorProxy.deleteGroup(cmd.getGroupId());
                 break;
             case TYPE_DELETE_TASKS_ALL:
-                mProcessorProxy.deleteAll();
+                mProcessorProxy.deleteAll(cmd.getTaskType());
                 break;
             case TYPE_DELETE_TASKS_COMPLETED:
                 mProcessorProxy.deleteCompleted();
@@ -99,12 +106,12 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
     }
 
     @Override
-    public void setThreadPool(TaskType taskType, ExecutorService threadPool) {
+    public void setThreadPool(TaskType taskType, ThreadPoolExecutor threadPool) {
         mThreadPool.put(taskType,threadPool);
     }
 
     @Override
-    public ExecutorService getTaskThreadPool(TaskType type) {
+    public ThreadPoolExecutor getTaskThreadPool(TaskType type) {
         return mThreadPool.get(type);
     }
 
@@ -138,6 +145,11 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
     @Override
     public void setParams(Map<String, String> params) {
         mParams = params;
+    }
+
+    @Override
+    public List<ITaskHolder> getTasks() {
+        return mTasks;
     }
 
     @Override
@@ -184,6 +196,18 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
 
     @Override
     public void onFinished(ITask task) {
+
+        //完成的任务释放handler,减少占用的内存
+        for(ITaskHolder holder : mTasks) {
+            if(holder.getTask().getTaskId() == task.getTaskId()) {
+                ITaskHandlerHolder handlerHolder = (ITaskHandlerHolder) holder;
+                if(handlerHolder.getTaskHandler() != null) {
+                    handlerHolder.setTaskHandler(null);
+                    break;
+                }
+            }
+        }
+
         mProcessorProxy.updateTask(task);
         mCallback.onFinished(task.getType(),ProcessType.TYPE_CHANGE_TASK,null);
     }

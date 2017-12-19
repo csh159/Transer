@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * <p>Author:    shijiale</p>
@@ -25,7 +26,6 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
     private ITaskProcessor mProcessor; //processor proxy
     private ExecutorService mCmdThreadPool; //cmd thread pool
     private ITaskProcessCallback mProcessCallback;
-    private List<ITaskHolder> mTasks = new ArrayList<>(); //task list
 
     public TaskManagerProxy() {
         mCmdThreadPool = Executors.newSingleThreadExecutor();
@@ -53,7 +53,7 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
     @Override
     public void setTaskProcessor(ITaskProcessor operation) {
         mProcessor = operation;
-        mProcessor.setTaskHolders(mTasks);
+        mProcessor.setTaskHolders(mManager.getTasks());
     }
 
     @Override
@@ -62,13 +62,13 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
     }
 
     @Override
-    public void setThreadPool(TaskType taskType, ExecutorService threadPool) {
+    public void setThreadPool(TaskType taskType, ThreadPoolExecutor threadPool) {
         mManager.setThreadPool(taskType,threadPool);
     }
 
 
     @Override
-    public ExecutorService getTaskThreadPool(TaskType type) {
+    public ThreadPoolExecutor getTaskThreadPool(TaskType type) {
         return mManager.getTaskThreadPool(type);
     }
 
@@ -93,11 +93,16 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
         mManager.setParams(params);
     }
 
+    @Override
+    public List<ITaskHolder> getTasks() {
+        return mManager.getTasks();
+    }
+
 
     @Override
     public void onFinished(TaskType taskType, ProcessType processType, List<ITask> tasks) {
         List<ITask> taskList = new ArrayList<>();
-        for(ITaskHolder holder : mTasks) {
+        for(ITaskHolder holder : mManager.getTasks()) {
             if(taskType == holder.getType()) {
                 taskList.add(holder.getTask());
             }

@@ -9,11 +9,9 @@ import java.util.concurrent.ExecutorService;
  * <p>Describe:</p>
  */
 
-public interface ITaskHolderProxy extends ITaskHolder{
+public interface ITaskHandlerHolder extends ITaskHolder{
 
     void setTaskHandler(ITaskHandler handler);
-
-    void setThreadPool(ExecutorService threadPool);
 
     ITaskHandler getTaskHandler();
 }

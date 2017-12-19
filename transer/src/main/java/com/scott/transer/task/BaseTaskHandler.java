@@ -22,7 +22,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     private volatile boolean isExit = false;
     private Map<String, String> mParams;
     private Map<String, String> mHeaders;
-    private ExecutorService mTaskHandleThreadPool;
+    private ThreadPoolExecutor mTaskHandleThreadPool;
     private volatile Task mTask;
     private HandleRunnable mHandleRunnable;
     private final long  MAX_DELAY_TIME = 300;
@@ -63,7 +63,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     }
 
     @Override
-    public void setThreadPool(ExecutorService threadPool) {
+    public void setThreadPool(ThreadPoolExecutor threadPool) {
         mTaskHandleThreadPool = threadPool;
     }
 
@@ -193,6 +193,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         }
         isExit = true;
         mTask.setState(TaskState.STATE_STOP);
+        mTaskHandleThreadPool.remove(mHandleRunnable);
         mListenner.onStop(mTask);
     }
 

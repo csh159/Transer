@@ -22,7 +22,10 @@ import com.scott.transer.task.DefaultHttpUploadHandler;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Author:    shijiale</p>
@@ -69,8 +72,15 @@ public class TraserService extends Service implements ITaskProcessCallback{
         mTaskManagerProxy.setTaskManager(new TaskManager());
         mTaskManagerProxy.setTaskHandler(TaskType.TYPE_DOWNLOAD, DefaultHttpDownloadHandler.class);
         mTaskManagerProxy.setTaskHandler(TaskType.TYPE_UPLOAD, DefaultHttpUploadHandler.class);
-        mTaskManagerProxy.setThreadPool(TaskType.TYPE_UPLOAD, Executors.newFixedThreadPool(3));
-        mTaskManagerProxy.setThreadPool(TaskType.TYPE_DOWNLOAD,Executors.newFixedThreadPool(3));
+
+        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
+                6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
+        mTaskManagerProxy.setThreadPool(TaskType.TYPE_UPLOAD, threadPool);
+
+        threadPool = new ThreadPoolExecutor(3,3,
+                6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
+        mTaskManagerProxy.setThreadPool(TaskType.TYPE_DOWNLOAD,threadPool);
+
         mTaskManagerProxy.setHeaders(new HashMap<String, String>());
         mTaskManagerProxy.setParams(new HashMap<String, String>());
     }

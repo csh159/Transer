@@ -75,26 +75,32 @@ public class TaskDbProcessor implements ITaskProcessor {
     }
 
     @Override
-    public void deleteCompleted() {
+    public void deleteCompleted(TaskType type) {
         List<Task> tasks = mTaskDao
                 .queryBuilder()
                 .where(TaskDao.Properties.State.eq(TaskState.STATE_FINISH))
+                .where(TaskDao.Properties.Type.eq(type))
                 .list();
         mTaskDao.deleteInTx(tasks);
     }
 
     @Override
-    public void delete(int state) {
+    public void delete(int state,TaskType type) {
         List<Task> tasks = mTaskDao
                 .queryBuilder()
                 .where(TaskDao.Properties.State.eq(state))
+                .where(TaskDao.Properties.Type.eq(type))
                 .list();
         mTaskDao.deleteInTx(tasks);
     }
 
     @Override
-    public void deleteAll() {
-        mTaskDao.deleteAll();
+    public void deleteAll(TaskType type) {
+        List<Task> tasks = mTaskDao
+                .queryBuilder()
+                .where(TaskDao.Properties.Type.eq(type))
+                .list();
+        mTaskDao.deleteInTx(tasks);
     }
 
     @Override
@@ -128,18 +134,22 @@ public class TaskDbProcessor implements ITaskProcessor {
     }
 
     @Override
-    public List<ITask> getAllTasks() {
-        List<Task> tasks = mTaskDao.loadAll();
+    public List<ITask> getAllTasks(TaskType type) {
+        List<Task> tasks = mTaskDao
+                .queryBuilder()
+                .where(TaskDao.Properties.Type.eq(true))
+                .list();
         List<ITask> tasks1 = new ArrayList<>();
         tasks1.addAll(tasks);
         return tasks1;
     }
 
     @Override
-    public List<ITask> getTasks(int state) {
+    public List<ITask> getTasks(int state,TaskType type) {
         List<Task> tasks = mTaskDao
                 .queryBuilder()
                 .where(TaskDao.Properties.State.eq(state))
+                .where(TaskDao.Properties.Type.eq(type))
                 .list();
         List<ITask> tasks1 = new ArrayList<>();
         tasks1.addAll(tasks);
@@ -189,10 +199,12 @@ public class TaskDbProcessor implements ITaskProcessor {
     }
 
     @Override
-    public void changeAllTasksState(int state) {
+    public void changeAllTasksState(int state,TaskType type) {
         List<Task> tasks = mTaskDao.loadAll();
         for(Task task : tasks) {
-            task.setState(state);
+            if(type == task.getType()) {
+                task.setState(state);
+            }
         }
 
         mTaskDao.updateInTx(tasks);

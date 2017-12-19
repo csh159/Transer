@@ -6,6 +6,7 @@ import java.io.IOError;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * <p>Author:    shijiale</p>
@@ -16,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 
 public interface ITaskHandler extends ITaskHolder{
 
-    void setThreadPool(ExecutorService threadPool);
+    void setThreadPool(ThreadPoolExecutor threadPool);
 
     void start();
 

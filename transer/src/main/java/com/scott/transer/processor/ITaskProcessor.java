@@ -1,7 +1,9 @@
 package com.scott.transer.processor;
 
 import com.scott.annotionprocessor.ITask;
+import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.task.ITaskHolder;
+import com.scott.transer.task.Task;
 
 import java.util.List;
 
@@ -28,11 +30,11 @@ public interface ITaskProcessor {
 
     void deleteTasks(String[] taskIds);
 
-    void deleteCompleted();
+    void deleteCompleted(TaskType type);
 
-    void delete(int state);
+    void delete(int state,TaskType type);
 
-    void deleteAll();
+    void deleteAll(TaskType type);
 
     ITask getTask(String taskId);
 
@@ -40,9 +42,9 @@ public interface ITaskProcessor {
 
     List<ITask> getGroup(String groupId);
 
-    List<ITask> getAllTasks();
+    List<ITask> getAllTasks(TaskType type);
 
-    List<ITask> getTasks(int state);
+    List<ITask> getTasks(int state, TaskType type);
 
     void changeTaskState(int state,String taskId);
 
@@ -52,7 +54,7 @@ public interface ITaskProcessor {
 
     void changeTasksState(int state,String groupId);
 
-    void changeAllTasksState(int state);
+    void changeAllTasksState(int state,TaskType type);
 
     void updateTask(ITask task);
 

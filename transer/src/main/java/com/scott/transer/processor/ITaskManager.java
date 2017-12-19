@@ -2,9 +2,12 @@ package com.scott.transer.processor;
 
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.task.ITaskHandler;
+import com.scott.transer.task.ITaskHolder;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * <p>Author:    shijiale</p>
@@ -21,9 +24,9 @@ public interface ITaskManager {
 
     void setProcessCallback(ITaskProcessCallback callback);
 
-    void setThreadPool(TaskType taskType,ExecutorService threadPool);
+    void setThreadPool(TaskType taskType,ThreadPoolExecutor threadPool);
 
-    ExecutorService getTaskThreadPool(TaskType type);
+    ThreadPoolExecutor getTaskThreadPool(TaskType type);
 
     ITaskHandler getTaskHandler(TaskType taskType);
 
@@ -32,4 +35,6 @@ public interface ITaskManager {
     void setHeaders(Map<String,String> headers);
 
     void setParams(Map<String,String> params);
+
+    List<ITaskHolder> getTasks();
 }

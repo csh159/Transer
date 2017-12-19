@@ -12,60 +12,55 @@ import java.util.concurrent.ExecutorService;
  * <p>Describe:</p>
  */
 
-public class TaskHolderProxy implements ITaskHolderProxy {
+public class TaskHandlerHolder implements ITaskHandlerHolder {
 
     private ITaskHandler mHandler;
 
     @Override
     public void setState(int state) {
-        switch (state) {
-            case TaskState.STATE_STOP:
-                mHandler.stop();
-                break;
-            case TaskState.STATE_PAUSE:
-                mHandler.pause();
-                break;
-            case TaskState.STATE_RESUME:
-                mHandler.resume();
-                break;
-            case TaskState.STATE_START:
-                mHandler.start();
-                break;
+        if(mHandler != null) {
+            mHandler.setState(state);
         }
     }
 
     @Override
     public int getState() {
-        return 0;
+        if(mHandler == null) {
+            return TaskState.STATE_STOP;
+        }
+        return mHandler.getState();
     }
 
     @Override
     public ITask getTask() {
-        return null;
+        if(mHandler == null) {
+            return null;
+        }
+        return mHandler.getTask();
     }
 
     @Override
     public void setTask(ITask task) {
-
+        if(mHandler != null) {
+            mHandler.setTask(task);
+        }
     }
 
     @Override
     public TaskType getType() {
-        return null;
+        if(mHandler == null) {
+            return  TaskType.TYPE_UPLOAD;
+        }
+        return mHandler.getType();
     }
 
     @Override
     public void setTaskHandler(ITaskHandler handler) {
-
-    }
-
-    @Override
-    public void setThreadPool(ExecutorService threadPool) {
-
+        mHandler = handler;
     }
 
     @Override
     public ITaskHandler getTaskHandler() {
-        return null;
+        return mHandler;
     }
 }
