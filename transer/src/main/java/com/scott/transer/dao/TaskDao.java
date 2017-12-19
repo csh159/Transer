@@ -40,8 +40,9 @@ public class TaskDao extends AbstractDao<Task, Void> {
         public final static Property CompleteLength = new Property(10, long.class, "completeLength", false, "COMPLETE_LENGTH");
         public final static Property State = new Property(11, int.class, "state", false, "STATE");
         public final static Property Name = new Property(12, String.class, "name", false, "NAME");
-        public final static Property Type = new Property(13, Integer.class, "type", false, "TYPE");
-        public final static Property UserId = new Property(14, String.class, "userId", false, "USER_ID");
+        public final static Property Speed = new Property(13, long.class, "speed", false, "SPEED");
+        public final static Property Type = new Property(14, Integer.class, "type", false, "TYPE");
+        public final static Property UserId = new Property(15, String.class, "userId", false, "USER_ID");
     }
 
     private final TaskTypeConverter typeConverter = new TaskTypeConverter();
@@ -71,8 +72,9 @@ public class TaskDao extends AbstractDao<Task, Void> {
                 "\"COMPLETE_LENGTH\" INTEGER NOT NULL ," + // 10: completeLength
                 "\"STATE\" INTEGER NOT NULL ," + // 11: state
                 "\"NAME\" TEXT," + // 12: name
-                "\"TYPE\" INTEGER," + // 13: type
-                "\"USER_ID\" TEXT);"); // 14: userId
+                "\"SPEED\" INTEGER NOT NULL ," + // 13: speed
+                "\"TYPE\" INTEGER," + // 14: type
+                "\"USER_ID\" TEXT);"); // 15: userId
     }
 
     /** Drops the underlying database table. */
@@ -125,15 +127,16 @@ public class TaskDao extends AbstractDao<Task, Void> {
         if (name != null) {
             stmt.bindString(13, name);
         }
+        stmt.bindLong(14, entity.getSpeed());
  
         TaskType type = entity.getType();
         if (type != null) {
-            stmt.bindLong(14, typeConverter.convertToDatabaseValue(type));
+            stmt.bindLong(15, typeConverter.convertToDatabaseValue(type));
         }
  
         String userId = entity.getUserId();
         if (userId != null) {
-            stmt.bindString(15, userId);
+            stmt.bindString(16, userId);
         }
     }
 
@@ -181,15 +184,16 @@ public class TaskDao extends AbstractDao<Task, Void> {
         if (name != null) {
             stmt.bindString(13, name);
         }
+        stmt.bindLong(14, entity.getSpeed());
  
         TaskType type = entity.getType();
         if (type != null) {
-            stmt.bindLong(14, typeConverter.convertToDatabaseValue(type));
+            stmt.bindLong(15, typeConverter.convertToDatabaseValue(type));
         }
  
         String userId = entity.getUserId();
         if (userId != null) {
-            stmt.bindString(15, userId);
+            stmt.bindString(16, userId);
         }
     }
 
@@ -214,8 +218,9 @@ public class TaskDao extends AbstractDao<Task, Void> {
             cursor.getLong(offset + 10), // completeLength
             cursor.getInt(offset + 11), // state
             cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12), // name
-            cursor.isNull(offset + 13) ? null : typeConverter.convertToEntityProperty(cursor.getInt(offset + 13)), // type
-            cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14) // userId
+            cursor.getLong(offset + 13), // speed
+            cursor.isNull(offset + 14) ? null : typeConverter.convertToEntityProperty(cursor.getInt(offset + 14)), // type
+            cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15) // userId
         );
         return entity;
     }
@@ -235,8 +240,9 @@ public class TaskDao extends AbstractDao<Task, Void> {
         entity.setCompleteLength(cursor.getLong(offset + 10));
         entity.setState(cursor.getInt(offset + 11));
         entity.setName(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
-        entity.setType(cursor.isNull(offset + 13) ? null : typeConverter.convertToEntityProperty(cursor.getInt(offset + 13)));
-        entity.setUserId(cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14));
+        entity.setSpeed(cursor.getLong(offset + 13));
+        entity.setType(cursor.isNull(offset + 14) ? null : typeConverter.convertToEntityProperty(cursor.getInt(offset + 14)));
+        entity.setUserId(cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15));
      }
     
     @Override

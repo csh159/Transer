@@ -26,7 +26,5 @@ public enum ProcessType {
     TYPE_CHANGE_TASK_GROUP,
     TASK_CHANGE_TASK_ALL,
     TASK_CHANGE_TASK_SOME,
-
-    //internal use, user don't use it
-    INTERNAL_TASK_CHANGE_STATE
+    TASK_DEFAULT
 }

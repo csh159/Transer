@@ -135,9 +135,13 @@ public class TaskDbProcessor implements ITaskProcessor {
 
     @Override
     public List<ITask> getAllTasks(TaskType type) {
+
+        Task.TaskTypeConverter converter = new Task.TaskTypeConverter();
+        int nType = converter.convertToDatabaseValue(type);
+
         List<Task> tasks = mTaskDao
                 .queryBuilder()
-                .where(TaskDao.Properties.Type.eq(true))
+                .where(TaskDao.Properties.Type.eq(nType))
                 .list();
         List<ITask> tasks1 = new ArrayList<>();
         tasks1.addAll(tasks);

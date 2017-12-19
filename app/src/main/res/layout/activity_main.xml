@@ -12,7 +12,7 @@
     <Button
         android:layout_marginTop="10dp"
         android:id="@+id/btn_simple_download"
-        android:text="SimpleDownload"
+        android:text="Simple Download"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -20,7 +20,31 @@
     <Button
         android:layout_marginTop="10dp"
         android:id="@+id/btn_simple_upload"
-        android:text="SimpleUpload"
+        android:text="Simple Upload"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:layout_marginTop="10dp"
+        android:id="@+id/btn_create_task"
+        android:text="Create Task"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:layout_marginTop="10dp"
+        android:id="@+id/btn_upload_tasks"
+        android:text="UPLOAD TASKS"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:layout_marginTop="10dp"
+        android:id="@+id/btn_download_tasks"
+        android:text="DOWNLOAD TASKS"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

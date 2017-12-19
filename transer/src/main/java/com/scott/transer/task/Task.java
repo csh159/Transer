@@ -34,6 +34,7 @@ public class Task implements ITask {
     private long completeLength;
     private int state;
     private String name;
+    private long speed;
 
     public static final class TaskTypeConverter implements PropertyConverter<TaskType,Integer> {
 
@@ -87,12 +88,20 @@ public class Task implements ITask {
         this.type = builder.getType();
         this.userId = builder.getUserId();
         this.name = builder.getName();
+
+        if(taskId == null) {
+            taskId = dataSource.hashCode() + destSource.hashCode() + System.currentTimeMillis() + "";
+        }
+
+        if(sesstionId == null) {
+            sesstionId = taskId;
+        }
     }
 
-    @Generated(hash = 420318931)
+    @Generated(hash = 2003111027)
     public Task(String dataSource, String destSource, String sesstionId, long length, long startOffset,
             long endOffset, String taskId, String groupId, String groupName, long completeTime,
-            long completeLength, int state, String name, TaskType type, String userId) {
+            long completeLength, int state, String name, long speed, TaskType type, String userId) {
         this.dataSource = dataSource;
         this.destSource = destSource;
         this.sesstionId = sesstionId;
@@ -106,6 +115,7 @@ public class Task implements ITask {
         this.completeLength = completeLength;
         this.state = state;
         this.name = name;
+        this.speed = speed;
         this.type = type;
         this.userId = userId;
     }
@@ -189,6 +199,11 @@ public class Task implements ITask {
         return name;
     }
 
+    @Override
+    public long getSpeed() {
+        return speed;
+    }
+
     public void setDataSource(String dataSource) {
         this.dataSource = dataSource;
     }
@@ -243,6 +258,10 @@ public class Task implements ITask {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public void setSpeed(long speed) {
+        this.speed = speed;
     }
 
     @Override

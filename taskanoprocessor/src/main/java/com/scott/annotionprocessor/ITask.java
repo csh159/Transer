@@ -40,4 +40,6 @@ public interface ITask {
     String getUserId();
 
     String getName();
+
+    long getSpeed();
 }

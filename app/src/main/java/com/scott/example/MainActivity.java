@@ -43,4 +43,23 @@ public class MainActivity extends AppCompatActivity {
     public void onSimpleUpload() {
         startActivity(new Intent(this,SimpleUploadActivity.class));
     }
+
+    @OnClick(R.id.btn_upload_tasks)
+    public void showUploadTasks() {
+        Intent intent = new Intent(this,SimpleTaskListActivity.class);
+        intent.putExtra(TaskFragment.EXTRA_TASK_TYPE,TaskType.TYPE_UPLOAD);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.btn_download_tasks)
+    public void showDownloadTasks() {
+        Intent intent = new Intent(this,SimpleTaskListActivity.class);
+        intent.putExtra(TaskFragment.EXTRA_TASK_TYPE,TaskType.TYPE_DOWNLOAD);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.btn_create_task)
+    public void createTask() {
+        startActivity(new Intent(this,CreateTaskActivity.class));
+    }
 }

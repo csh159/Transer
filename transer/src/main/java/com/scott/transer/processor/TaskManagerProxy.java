@@ -37,6 +37,7 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
         mManager.setProcessCallback(this);
         mManager.setTaskProcessor(mProcessor);
         mProcessor.setTaskManager(mManager);
+        mProcessor.setTaskHolders(mManager.getTasks());
     }
 
     @Override
@@ -53,7 +54,6 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
     @Override
     public void setTaskProcessor(ITaskProcessor operation) {
         mProcessor = operation;
-        mProcessor.setTaskHolders(mManager.getTasks());
     }
 
     @Override

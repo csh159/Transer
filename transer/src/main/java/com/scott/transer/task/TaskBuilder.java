@@ -47,6 +47,8 @@ public class TaskBuilder implements ITaskBuilder {
 
     private ITask task;
 
+    private long speed;
+
     @Override
     public String getDataSource() {
         return dataSource;
@@ -120,6 +122,11 @@ public class TaskBuilder implements ITaskBuilder {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public long getSpeed() {
+        return speed;
     }
 
     @Override
@@ -230,6 +237,12 @@ public class TaskBuilder implements ITaskBuilder {
     @Override
     public ITaskBuilder setSessionId(String sesstionId) {
         this.sessionId = sesstionId;
+        return this;
+    }
+
+    @Override
+    public ITaskBuilder setSpeed(long speed) {
+        this.speed = speed;
         return this;
     }
 }

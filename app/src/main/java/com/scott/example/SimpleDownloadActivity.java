@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.scott.annotionprocessor.ITask;
+import com.scott.example.utils.Contacts;
 import com.scott.transer.task.TaskBuilder;
 import com.scott.transer.task.DefaultHttpDownloadHandler;
 import com.scott.transer.task.ITaskHandler;
@@ -19,7 +20,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,7 +66,7 @@ public class SimpleDownloadActivity extends AppCompatActivity {
 
     private ITaskHandler mHandler;
 
-    final String URL = "http://192.168.1.129:8888/WebDemo/test.zip";
+    final String URL = "http://" + Contacts.TEST_HOST + "/WebDemo/test.zip";
     final String FILE_PATH = Environment.getExternalStorageDirectory().toString() + File.separator + "test.zip";
     final String FILE_MD5 = "2d1a9343e2f076d233d8bf5f0c3bf17f";
 
@@ -115,7 +119,10 @@ public class SimpleDownloadActivity extends AppCompatActivity {
                 Debugger.error("OnlyDownloadActivity","speed = " + getFileSize(speed) + "/s");
             }
         });
-        mHandler.setThreadPool(Executors.newSingleThreadExecutor());
+
+        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
+                6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
+        mHandler.setThreadPool(threadPool);
     }
 
     @OnClick(R.id.btn_stop)

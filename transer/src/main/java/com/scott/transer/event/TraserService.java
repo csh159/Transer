@@ -38,7 +38,7 @@ public class TraserService extends Service implements ITaskProcessCallback{
 
     ITaskManagerProxy mTaskManagerProxy;
 
-    public static final String ACTION_EXECUTE_CMD = "_CMD";
+    static final String ACTION_EXECUTE_CMD = "_CMD";
 
     @Nullable
     @Override
@@ -49,6 +49,9 @@ public class TraserService extends Service implements ITaskProcessCallback{
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
+        if(action == null) {
+            return Service.START_STICKY;
+        }
         switch (action) {
             case ACTION_EXECUTE_CMD:
                 ITaskCmd cmd = TaskEventBus.sInstance.mDispatcher.getTaskCmd();
@@ -88,5 +91,6 @@ public class TraserService extends Service implements ITaskProcessCallback{
     @Override
     public void onFinished(TaskType taskType, ProcessType type,List<ITask> tasks) {
         TaskEventBus.sInstance.mDispatcher.dispatchTasks(taskType,type,tasks);
+        TaskEventBus.sInstance.mDispatcher.dispatchTasks(taskType,ProcessType.TASK_DEFAULT,tasks);
     }
 }

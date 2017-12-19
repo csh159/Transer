@@ -47,4 +47,6 @@ public interface ITaskBuilder extends ITask {
     ITaskBuilder setTaskId(String taskId);
 
     ITaskBuilder setSessionId(String sesstionId);
+
+    ITaskBuilder setSpeed(long speed);
 }

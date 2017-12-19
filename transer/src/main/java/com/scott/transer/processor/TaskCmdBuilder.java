@@ -17,24 +17,32 @@ import java.util.List;
 
 public class TaskCmdBuilder implements ITaskCmdBuilder {
 
-    private TaskType taskType = TaskType.TYPE_UPLOAD;
+    private TaskType taskType;
     private ProcessType processType;
     private ITask task;
     private List<ITask> tasks;
+    private ITaskCmd cmd;
+    private String[] taskids;
+    private String taskId;
+    private int state;
+    private String groupId;
 
     @Override
     public ITaskCmdBuilder setTaskId(String taskId) {
-        return null;
+        this.taskId = taskId;
+        return this;
     }
 
     @Override
     public ITaskCmdBuilder setGroupId(String groupId) {
-        return null;
+        this.groupId = groupId;
+        return this;
     }
 
     @Override
     public ITaskCmdBuilder setState(int state) {
-        return null;
+        this.state = state;
+        return this;
     }
 
     @Override
@@ -51,7 +59,8 @@ public class TaskCmdBuilder implements ITaskCmdBuilder {
 
     @Override
     public ITaskCmdBuilder setTaskIds(String[] taskIds) {
-        return null;
+        this.taskids = taskIds;
+        return this;
     }
 
     @Override
@@ -62,33 +71,38 @@ public class TaskCmdBuilder implements ITaskCmdBuilder {
 
     @Override
     public ITaskCmdBuilder setTaskType(TaskType type) {
-        return null;
+        taskType = type;
+        return this;
     }
 
     @Override
     public ITaskCmdBuilder setTaskCmd(ITaskCmd cmd) {
-        return null;
+        this.cmd = cmd;
+        return this;
     }
 
     @Override
     public ITaskCmd build() {
+        if(cmd != null) {
+            return cmd;
+        }
         ITaskCmd cmd = new TaskCmd(this);
         return cmd;
     }
 
     @Override
     public String getTaskId() {
-        return null;
+        return taskId;
     }
 
     @Override
     public String getGroupId() {
-        return null;
+        return groupId;
     }
 
     @Override
     public int getState() {
-        return 0;
+        return state;
     }
 
     @Override
@@ -103,7 +117,7 @@ public class TaskCmdBuilder implements ITaskCmdBuilder {
 
     @Override
     public String[] getTaskIds() {
-        return new String[0];
+        return taskids;
     }
 
     @Override

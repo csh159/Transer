@@ -66,15 +66,15 @@ public class TaskProcessorProxy implements ITaskProcessor {
     }
 
     @Override
-    public void deleteCompleted() {
-        mProcessor.deleteCompleted();
-        mDbProcessor.deleteCompleted();
+    public void deleteCompleted(TaskType type) {
+        mProcessor.deleteCompleted(type);
+        mDbProcessor.deleteCompleted(type);
     }
 
     @Override
-    public void delete(int state) {
-        mProcessor.delete(state);
-        mDbProcessor.delete(state);
+    public void delete(int state,TaskType taskType) {
+        mProcessor.delete(state,taskType);
+        mDbProcessor.delete(state,taskType);
     }
 
 
@@ -115,20 +115,20 @@ public class TaskProcessorProxy implements ITaskProcessor {
     }
 
     @Override
-    public List<ITask> getAllTasks() {
-        List<ITask> tasks = mProcessor.getAllTasks();
-        if(tasks == null) {
-            tasks = mDbProcessor.getAllTasks();
+    public List<ITask> getAllTasks(TaskType taskType) {
+        List<ITask> tasks = mProcessor.getAllTasks(taskType);
+        if(tasks == null || tasks.isEmpty()) {
+            tasks = mDbProcessor.getAllTasks(taskType);
             mProcessor.addTasks(tasks);
         }
         return tasks;
     }
 
     @Override
-    public List<ITask> getTasks(int state) {
-        List<ITask> tasks = mProcessor.getTasks(state);
+    public List<ITask> getTasks(int state,TaskType taskType) {
+        List<ITask> tasks = mProcessor.getTasks(state,taskType);
         if(tasks == null) {
-            tasks = mDbProcessor.getTasks(state);
+            tasks = mDbProcessor.getTasks(state,taskType);
             mProcessor.addTasks(tasks);
         }
         return tasks;
@@ -158,9 +158,9 @@ public class TaskProcessorProxy implements ITaskProcessor {
     }
 
     @Override
-    public void changeAllTasksState(int state) {
-        mProcessor.changeAllTasksState(state);
-        mDbProcessor.changeAllTasksState(state);
+    public void changeAllTasksState(int state,TaskType taskType) {
+        mProcessor.changeAllTasksState(state,taskType);
+        mDbProcessor.changeAllTasksState(state,taskType);
     }
 
     @Override

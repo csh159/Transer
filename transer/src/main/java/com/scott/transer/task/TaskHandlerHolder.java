@@ -15,6 +15,7 @@ import java.util.concurrent.ExecutorService;
 public class TaskHandlerHolder implements ITaskHandlerHolder {
 
     private ITaskHandler mHandler;
+    private ITask mTask;
 
     @Override
     public void setState(int state) {
@@ -34,13 +35,14 @@ public class TaskHandlerHolder implements ITaskHandlerHolder {
     @Override
     public ITask getTask() {
         if(mHandler == null) {
-            return null;
+            return mTask;
         }
         return mHandler.getTask();
     }
 
     @Override
     public void setTask(ITask task) {
+        mTask = task;
         if(mHandler != null) {
             mHandler.setTask(task);
         }
@@ -49,7 +51,7 @@ public class TaskHandlerHolder implements ITaskHandlerHolder {
     @Override
     public TaskType getType() {
         if(mHandler == null) {
-            return  TaskType.TYPE_UPLOAD;
+            return  mTask.getType();
         }
         return mHandler.getType();
     }

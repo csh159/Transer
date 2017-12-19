@@ -24,9 +24,10 @@
 
         <service android:name="com.scott.transer.event.TraserService" />
 
-        <activity android:name=".SimpleDownloadActivity">
-        </activity>
-        <activity android:name=".SimpleUploadActivity"></activity>
+        <activity android:name=".SimpleDownloadActivity" />
+        <activity android:name=".SimpleUploadActivity" />
+        <activity android:name=".CreateTaskActivity" />
+        <activity android:name=".SimpleTaskListActivity"></activity>
     </application>
 
 </manifest>

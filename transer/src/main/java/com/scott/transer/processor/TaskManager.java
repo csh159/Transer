@@ -56,10 +56,10 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
                 mProcessorProxy.deleteAll(cmd.getTaskType());
                 break;
             case TYPE_DELETE_TASKS_COMPLETED:
-                mProcessorProxy.deleteCompleted();
+                mProcessorProxy.deleteCompleted(cmd.getTaskType());
                 break;
             case TYPE_DELETE_TASKS_STATE:
-                mProcessorProxy.delete(cmd.getTask().getState());
+                mProcessorProxy.delete(cmd.getTask().getState(),cmd.getTaskType());
                 break;
             case TYPE_CHANGE_TASK:
                 mProcessorProxy.changeTasksState(cmd.getState(),cmd.getTaskIds());
@@ -74,19 +74,19 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
                 mProcessorProxy.getTasks(cmd.getTaskIds());
                 break;
             case TYPE_QUERY_TASKS_ALL:
-                mProcessorProxy.getAllTasks();
+                mProcessorProxy.getAllTasks(cmd.getTaskType());
                 break;
             case TYPE_QUERY_TASKS_COMPLETED:
-                mProcessorProxy.getTasks(TaskState.STATE_FINISH);
+                mProcessorProxy.getTasks(TaskState.STATE_FINISH,cmd.getTaskType());
                 break;
             case TYPE_QUERY_TASKS_GROUP:
                 mProcessorProxy.getGroup(cmd.getGroupId());
                 break;
             case TYPE_QUERY_TASKS_STATE:
-                mProcessorProxy.getTasks(cmd.getState());
+                mProcessorProxy.getTasks(cmd.getState(),cmd.getTaskType());
                 break;
             case TASK_CHANGE_TASK_ALL:
-                mProcessorProxy.changeAllTasksState(cmd.getState());
+                mProcessorProxy.changeAllTasksState(cmd.getState(),cmd.getTaskType());
                 break;
             case TASK_CHANGE_TASK_SOME:
                 mProcessorProxy.changeTasksState(cmd.getState(),cmd.getTaskIds());
