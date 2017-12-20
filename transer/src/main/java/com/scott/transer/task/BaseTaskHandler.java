@@ -33,8 +33,8 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     private Thread mStateThread;
 
     public BaseTaskHandler() {
-        mHandleRunnable = new HandleRunnable();
         mStateRunnable = new StateRunnable();
+        mHandleRunnable = new HandleRunnable();
     }
 
     @Override
@@ -80,12 +80,6 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             case TaskState.STATE_STOP:
                 stop();
                 break;
-            case TaskState.STATE_PAUSE:
-                pause();
-                break;
-            case TaskState.STATE_RESUME:
-                resume();
-                break;
         }
     }
 
@@ -117,12 +111,13 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         prepare(task);
         //获取到的源数据大小设置到task
         ((Task) task).setLength(fileSize());
+        mListenner.onStart(mTask);
         Debugger.info(TAG,"start ============= length = " + task.getLength() + "" +
                 ",completeLength = " + task.getCompleteLength() + ",startOffset = " + task.getStartOffset() + ",endOffset = " + task.getEndOffset());
 
         while (!isExit) {
-            Debugger.info(TAG,"length = " + task.getLength() + "" +
-                    ",completeLength = " + task.getCompleteLength() + ",startOffset = " + task.getStartOffset() + ",endOffset = " + task.getEndOffset());
+//            Debugger.info(TAG,"length = " + task.getLength() + "" +
+//                    ",completeLength = " + task.getCompleteLength() + ",startOffset = " + task.getStartOffset() + ",endOffset = " + task.getEndOffset());
             byte[] datas = readPice((Task) task); // 从源中读取一片数据
             int piceSize = getPiceRealSize(); //获取当前读取一片的实际大小
 
@@ -162,12 +157,13 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     public void start() {
         synchronized (this) {
             //如果任务已经开始或完成则不重复开始
-            if(mTask.getState() == TaskState.STATE_START || isExit) {
+            if(TaskState.STATE_RUNNING == mTask.getState()) {
                 //throw new IllegalStateException("current handler already started ...");
                 Debugger.error(TAG,"current handler already started ...");
                 return;
             }
 
+            isExit = false;
             //如果设置了线程池则会在线程池中传输，否则会在当前线程中开始传输
             if (mTaskHandleThreadPool != null) {
                 mTaskHandleThreadPool.execute(mHandleRunnable);
@@ -177,8 +173,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
             mStateThread = new Thread(mStateRunnable);
             mStateThread.start();
-            mListenner.onStart(mTask);
-            mTask.setState(TaskState.STATE_START);
+            mTask.setState(TaskState.STATE_RUNNING);
         }
     }
 
@@ -191,51 +186,16 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 TaskState.STATE_ERROR == mTask.getState()) {
             return;
         }
+
+        Debugger.info(TAG,"stop ============= length = " + mTask.getLength() + "" +
+                ",completeLength = " + mTask.getCompleteLength() + ",startOffset = " + mTask.getStartOffset() + ",endOffset = " + mTask.getEndOffset());
         isExit = true;
         mTask.setState(TaskState.STATE_STOP);
         mTaskHandleThreadPool.remove(mHandleRunnable);
         mListenner.onStop(mTask);
     }
 
-    @Override
-    public void pause() {
-
-        //停止，完成，暂停，失败 的任务不能暂停
-        if(TaskState.STATE_PAUSE == mTask.getState() ||
-                TaskState.STATE_FINISH == mTask.getState() ||
-                TaskState.STATE_STOP == mTask.getState() ||
-                TaskState.STATE_ERROR == mTask.getState()) {
-            return;
-        }
-        mTask.setState(TaskState.STATE_PAUSE);
-        isExit = true;
-        mListenner.onPause(mTask);
-        Debugger.info(TAG,"pause ============= length = " + mTask.getLength() + "" +
-                ",completeLength = " + mTask.getCompleteLength() + ",startOffset = " + mTask.getStartOffset() + ",endOffset = " + mTask.getEndOffset());
-    }
-
-    @Override
-    public void resume() {
-        Debugger.info(TAG,"resume ============= length = " + mTask.getLength() + "" +
-                ",completeLength = " + mTask.getCompleteLength() + ",startOffset = " + mTask.getStartOffset() + ",endOffset = " + mTask.getEndOffset());
-
-        //开始 和 恢复的任务不能恢复
-        if(mTask.getState() == TaskState.STATE_START ||
-                mTask.getState() == TaskState.STATE_RESUME) {
-            return;
-        }
-
-        if(mHandleRunnable != null) {
-            mHandleRunnable = new HandleRunnable();
-        }
-        isExit = false;
-        mTask.setState(TaskState.STATE_RESUME);
-        start();
-        mListenner.onResume(mTask);
-    }
-
     protected void release() {
-
     }
 
     @Override
@@ -267,6 +227,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             } catch (Exception e) {
                 e.printStackTrace();
                 mTask.setState(TaskState.STATE_ERROR);
+                isExit = true;
                 mListenner.onError(TaskErrorCode.ERROR_CODE_EXCEPTION,mTask);
             }
         }
@@ -283,6 +244,9 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         public void run() {
             while (!isExit) {
                 try {
+
+                    Thread.sleep(MAX_DELAY_TIME);
+
                     ITask task = new TaskBuilder()
                             .setTaskId(mTask.getTaskId())
                             .setDestSource(mTask.getDestSource())
@@ -294,10 +258,9 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                             .setState(mTask.getState())
                             .setGroupId(mTask.getGroupId())
                             .build();
-
+                    if(getCurrentCompleteLength() == mLastCompleteLength) continue;
                     mListenner.onSpeedChanged((long) ((getCurrentCompleteLength() - mLastCompleteLength) / ( MAX_DELAY_TIME / 1000f)), task);
                     mLastCompleteLength = getCurrentCompleteLength();
-                    Thread.sleep(MAX_DELAY_TIME);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
