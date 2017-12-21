@@ -106,18 +106,16 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     private void handle(ITask task) throws Exception {
 
         mLastCompleteLength = task.getCompleteLength();
-        ((Task)task).setStartOffset(task.getCompleteLength()); //每次开始之前设置起始偏移量
         //开始任务前准备任务数据，初始化源数据流
         prepare(task);
         //获取到的源数据大小设置到task
         ((Task) task).setLength(fileSize());
         mListenner.onStart(mTask);
-        Debugger.info(TAG,"start ============= length = " + task.getLength() + "" +
+        Debugger.error(TAG,"start ============= length = " + task.getLength() + "" +
                 ",completeLength = " + task.getCompleteLength() + ",startOffset = " + task.getStartOffset() + ",endOffset = " + task.getEndOffset());
 
         while (!isExit) {
-//            Debugger.info(TAG,"length = " + task.getLength() + "" +
-//                    ",completeLength = " + task.getCompleteLength() + ",startOffset = " + task.getStartOffset() + ",endOffset = " + task.getEndOffset());
+
             byte[] datas = readPice((Task) task); // 从源中读取一片数据
             int piceSize = getPiceRealSize(); //获取当前读取一片的实际大小
 
@@ -131,6 +129,8 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             writePice(datas,(Task) task); //写入实际读入的大小
             mTask.setCompleteLength(mTask.getEndOffset());
             mTask.setStartOffset(mTask.getEndOffset());
+            Debugger.info(TAG,"length = " + task.getLength() + "" +
+                    ",completeLength = " + task.getCompleteLength() + ",startOffset = " + task.getStartOffset() + ",endOffset = " + task.getEndOffset());
 
             if(isPiceSuccessful()) { //判断一片是否成功
                 mListenner.onPiceSuccessful(mTask);
@@ -187,11 +187,11 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             return;
         }
 
-        Debugger.info(TAG,"stop ============= length = " + mTask.getLength() + "" +
+        Debugger.error(TAG,"stop ============= length = " + mTask.getLength() + "" +
                 ",completeLength = " + mTask.getCompleteLength() + ",startOffset = " + mTask.getStartOffset() + ",endOffset = " + mTask.getEndOffset());
         isExit = true;
         mTask.setState(TaskState.STATE_STOP);
-        mTaskHandleThreadPool.remove(mHandleRunnable);
+        //mTaskHandleThreadPool.remove(mHandleRunnable);
         mListenner.onStop(mTask);
     }
 

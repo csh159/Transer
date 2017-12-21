@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -46,14 +48,8 @@ public class SimpleDownloadActivity extends AppCompatActivity {
     @BindView(R.id.btn_start)
     Button btnStart;
 
-    @BindView(R.id.btn_pause)
-    Button btnPause;
-
     @BindView(R.id.btn_stop)
     Button btnStop;
-
-    @BindView(R.id.btn_resume)
-    Button btnResume;
 
     @BindView(R.id.tv_md5)
     TextView tvMd5;
@@ -66,9 +62,9 @@ public class SimpleDownloadActivity extends AppCompatActivity {
 
     private ITaskHandler mHandler;
 
-    final String URL = "http://" + Contacts.TEST_HOST + "/WebDemo/test.zip";
+    final String URL = "http://" + Contacts.TEST_HOST + "/WebDemo/DownloadManager";
     final String FILE_PATH = Environment.getExternalStorageDirectory().toString() + File.separator + "test.zip";
-    final String FILE_MD5 = "6e952b14ef2b2edaf4701326bfdf335c";
+    final String FILE_MD5 = "de37fe1c8f049bdd83090d40f806cd67";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +80,9 @@ public class SimpleDownloadActivity extends AppCompatActivity {
                 .setDestSource(FILE_PATH)
                 .build();
         mHandler.setTask(task);
+        Map<String,String> params = new HashMap<>();
+        params.put("path","test.zip");
+        mHandler.setParams(params);
         mHandler.setHandlerListenner(new SimpleTaskHandlerListenner() {
             @Override
             public void onPiceSuccessful(final ITask params) {
@@ -132,8 +131,6 @@ public class SimpleDownloadActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_start)
     public void start() {
-        File file = new File(FILE_PATH);
-        file.delete();
         mHandler.start();
     }
 

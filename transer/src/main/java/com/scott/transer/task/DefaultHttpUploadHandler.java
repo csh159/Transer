@@ -127,7 +127,7 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
         return super.getCurrentCompleteLength() + mRequestBody.mCurrentCompleteLength;
     }
 
-    private class PiceRequestBody extends RequestBody {
+    protected class PiceRequestBody extends RequestBody {
 
         private ByteArrayInputStream mSource; //当前需要传输的一片
         private int mCurrentCompleteLength; //当前已经完成的长度，写入多少增加多少

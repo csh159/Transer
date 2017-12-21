@@ -66,9 +66,7 @@ public class TaskListAdapter extends BaseAdapter {
         }
 
         BtnClickListenner l = new BtnClickListenner(i);
-        holder.btnPasue.setOnClickListener(l);
         holder.btnStart.setOnClickListener(l);
-        holder.btnResume.setOnClickListener(l);
         holder.btnStop.setOnClickListener(l);
 
         ITask task = mTasks.get(i);
@@ -140,12 +138,6 @@ public class TaskListAdapter extends BaseAdapter {
 
         @BindView(R.id.btn_stop)
         Button btnStop;
-
-        @BindView(R.id.btn_pause)
-        Button btnPasue;
-
-        @BindView(R.id.btn_resume)
-        Button btnResume;
 
         @BindView(R.id.progress_length)
         ProgressBar progressLength;

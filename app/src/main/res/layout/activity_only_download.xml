@@ -63,24 +63,8 @@
             android:layout_weight="1"
             android:layout_marginRight="5dp"
             android:layout_marginLeft="5dp"
-            android:text="暂停"
-            android:id="@+id/btn_pause"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
-        <Button
-            android:layout_weight="1"
-            android:layout_marginRight="5dp"
-            android:layout_marginLeft="5dp"
             android:text="结束"
             android:id="@+id/btn_stop"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
-        <Button
-            android:layout_weight="1"
-            android:layout_marginRight="5dp"
-            android:layout_marginLeft="5dp"
-            android:text="恢复"
-            android:id="@+id/btn_resume"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
     </LinearLayout>
