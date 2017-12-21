@@ -37,7 +37,6 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
         mManager.setProcessCallback(this);
         mManager.setTaskProcessor(mProcessor);
         mProcessor.setTaskManager(mManager);
-        mProcessor.setTaskHolders(mManager.getTasks());
     }
 
     @Override
@@ -45,7 +44,9 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                mManager.process(cmd);
+                synchronized (mProcessor) {
+                    mManager.process(cmd);
+                }
             }
         };
         mCmdThreadPool.execute(runnable);

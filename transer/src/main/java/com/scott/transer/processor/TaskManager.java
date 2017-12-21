@@ -8,12 +8,12 @@ import com.scott.transer.task.ITaskHandlerListenner;
 import com.scott.transer.task.ITaskHolder;
 import com.scott.transer.task.TaskState;
 import com.scott.annotionprocessor.TaskType;
+import com.scott.transer.utils.Debugger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -32,11 +32,13 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
     private Map<String,String> mParams;
     private Map<String,String> mHeaders;
     private List<ITaskHolder> mTasks = new ArrayList<>(); //task list
+    private final String TAG = TaskManager.class.getSimpleName();
 
 
     @Override
     public void process(ITaskCmd cmd) {
-        switch (cmd.getOperationType()) {
+
+        switch (cmd.getProceeType()) {
             case TYPE_ADD_TASKS:
                 mProcessorProxy.addTasks(cmd.getTasks());
                 break;
@@ -62,7 +64,7 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
                 mProcessorProxy.delete(cmd.getTask().getState(),cmd.getTaskType());
                 break;
             case TYPE_CHANGE_TASK:
-                mProcessorProxy.changeTasksState(cmd.getState(),cmd.getTaskIds());
+                mProcessorProxy.changeTaskState(cmd.getState(),cmd.getTaskId());
                 break;
             case TYPE_CHANGE_TASK_GROUP:
                 mProcessorProxy.changeTasksState(cmd.getState(),cmd.getGroupId());
@@ -92,7 +94,7 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
                 mProcessorProxy.changeTasksState(cmd.getState(),cmd.getTaskIds());
                 break;
         }
-        mCallback.onFinished(cmd.getTaskType(),cmd.getOperationType(),null);
+        mCallback.onFinished(cmd.getTaskType(),cmd.getProceeType(),null);
     }
 
     @Override
@@ -121,6 +123,7 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
         try {
             ITaskHandler taskHandler = handlerClzz.newInstance();
             taskHandler.setThreadPool(getTaskThreadPool(taskType));
+            taskHandler.setHandlerListenner(this);
             taskHandler.setHeaders(mHeaders);
             taskHandler.setParams(mParams);
             return taskHandler;
@@ -154,49 +157,51 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
 
     @Override
     public void onStart(ITask params) {
-        mProcessorProxy.changeTasksState(TaskState.STATE_START,params.getTaskId());
-        mCallback.onFinished(params.getType(),ProcessType.TYPE_CHANGE_TASK,null);
+        Debugger.error(TAG,"start = " + params);
+        synchronized (mProcessorProxy) {
+            mProcessorProxy.updateTask(params);
+            mCallback.onFinished(params.getType(), ProcessType.TYPE_CHANGE_TASK, null);
+        }
     }
 
     @Override
     public void onStop(ITask params) {
-        mProcessorProxy.changeTaskState(TaskState.STATE_START,params.getTaskId());
-        mCallback.onFinished(params.getType(),ProcessType.TYPE_CHANGE_TASK,null);
+        Debugger.error(TAG,"stop = " + params);
+        synchronized (mProcessorProxy) {
+            mProcessorProxy.updateTask(params);
+            mCallback.onFinished(params.getType(), ProcessType.TYPE_CHANGE_TASK, null);
+        }
     }
 
     @Override
     public void onError(int code, ITask params) {
-        mProcessorProxy.changeTaskState(TaskState.STATE_START,params.getTaskId());
-        mCallback.onFinished(params.getType(),ProcessType.TYPE_CHANGE_TASK,null);
+        Debugger.error(TAG,"error = " + params);
+        synchronized (mProcessorProxy) {
+            mProcessorProxy.updateTask(params);
+            mCallback.onFinished(params.getType(), ProcessType.TYPE_CHANGE_TASK, null);
+        }
     }
 
     @Override
     public void onSpeedChanged(long speed, ITask params) {
-        mProcessorProxy.updateTaskWithoutSave(params);
-        mCallback.onFinished(params.getType(),ProcessType.TYPE_CHANGE_TASK,null);
+        synchronized (mProcessorProxy) {
+            mProcessorProxy.updateTaskWithoutSave(params);
+            mCallback.onFinished(params.getType(), ProcessType.TYPE_CHANGE_TASK, null);
+        }
     }
 
     @Override
     public void onPiceSuccessful(ITask params) {
-        mProcessorProxy.updateTask(params);
-        mCallback.onFinished(params.getType(),ProcessType.TYPE_CHANGE_TASK,null);
-    }
-
-    @Override
-    public void onResume(ITask params) {
-        mProcessorProxy.changeTaskStateWithOutSave(TaskState.STATE_RESUME,params.getTaskId());
-        mCallback.onFinished(params.getType(),ProcessType.TYPE_CHANGE_TASK,null);
-    }
-
-    @Override
-    public void onPause(ITask params) {
-        mProcessorProxy.changeTaskStateWithOutSave(TaskState.STATE_PAUSE,params.getTaskId());
-        mCallback.onFinished(params.getType(),ProcessType.TYPE_CHANGE_TASK,null);
+        //Debugger.error(TAG,"picesuccessful = " + params);
+        synchronized (mProcessorProxy) {
+            mProcessorProxy.updateTask(params);
+            mCallback.onFinished(params.getType(), ProcessType.TYPE_CHANGE_TASK, null);
+        }
     }
 
     @Override
     public void onFinished(ITask task) {
-
+        Debugger.error(TAG,"finished = " + task);
         //完成的任务释放handler,减少占用的内存
         for(ITaskHolder holder : mTasks) {
             if(holder.getTask().getTaskId() == task.getTaskId()) {
@@ -207,8 +212,9 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
                 }
             }
         }
-
-        mProcessorProxy.updateTask(task);
+        synchronized (mProcessorProxy) {
+            mProcessorProxy.updateTask(task);
+        }
         mCallback.onFinished(task.getType(),ProcessType.TYPE_CHANGE_TASK,null);
     }
 }

@@ -113,19 +113,10 @@ public class SimpleUploadActivity extends AppCompatActivity {
         mHandler.stop();
     }
 
-    @OnClick(R.id.btn_pause)
-    public void pause() {
-        mHandler.pause();
-    }
 
     @OnClick(R.id.btn_start)
     public void start() {
         mHandler.start();
-    }
-
-    @OnClick(R.id.btn_resume)
-    public void resume() {
-        mHandler.resume();
     }
 
     private String getFileSize(long size) {

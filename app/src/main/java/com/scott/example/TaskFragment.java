@@ -74,17 +74,29 @@ public class TaskFragment extends Fragment {
     }
 
     @TaskSubscriber(taskType = TaskType.TYPE_DOWNLOAD)
-    public void onTasksChange(List<ITask> tasks) {
-        Debugger.error(TAG,tasks.toString());
+    public void onDownloadTasksChange(final List<ITask> tasks) {
+
+        if(mTaskType != TaskType.TYPE_DOWNLOAD) return;
+        //Debugger.error(TAG,tasks.toString());
+        onTasksChange(tasks);
+    }
+
+    @TaskSubscriber(taskType = TaskType.TYPE_UPLOAD)
+    public void onUploadTaskChange(final List<ITask> tasks) {
+        if(mTaskType != TaskType.TYPE_UPLOAD) return;
+        onTasksChange(tasks);
+    }
+
+    private void onTasksChange(final List<ITask> tasks) {
         if (tasks == null || tasks.isEmpty()) {
             return;
         }
 
-        mTasks.clear();
-        mTasks.addAll(tasks);
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                mTasks.clear();
+                mTasks.addAll(tasks);
                 mTaskAdapter.notifyDataSetChanged();
             }
         });

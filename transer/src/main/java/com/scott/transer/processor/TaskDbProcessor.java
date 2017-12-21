@@ -4,11 +4,10 @@ import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.dao.DaoHelper;
 import com.scott.transer.dao.TaskDao;
-import com.scott.transer.task.ITaskHolder;
 import com.scott.transer.task.Task;
 import com.scott.transer.task.TaskState;
+import com.scott.transer.task.TaskTypeConverter;
 
-import org.greenrobot.greendao.query.Query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +28,6 @@ public class TaskDbProcessor implements ITaskProcessor {
 
     @Override
     public void setTaskManager(ITaskManager manager) {
-
-    }
-
-    @Override
-    public void setTaskHolders(List<ITaskHolder> taskHolders) {
 
     }
 
@@ -136,7 +130,7 @@ public class TaskDbProcessor implements ITaskProcessor {
     @Override
     public List<ITask> getAllTasks(TaskType type) {
 
-        Task.TaskTypeConverter converter = new Task.TaskTypeConverter();
+        TaskTypeConverter converter = new TaskTypeConverter();
         int nType = converter.convertToDatabaseValue(type);
 
         List<Task> tasks = mTaskDao

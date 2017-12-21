@@ -9,10 +9,8 @@ package com.scott.transer.task;
 
 public interface TaskState {
     int STATE_ERROR = -1;
-    int STATE_RUNNING = 0;
-    int STATE_PAUSE = 1;
+    int STATE_RUNNING = 1;
     int STATE_STOP = 2;
     int STATE_FINISH = 3;
-    int STATE_RESUME = 4;
-    int STATE_START = 5;
+    int STATE_START = 4;
 }

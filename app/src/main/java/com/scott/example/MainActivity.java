@@ -16,6 +16,8 @@ import com.scott.transer.task.TaskBuilder;
 import com.scott.transer.task.DefaultHttpDownloadHandler;
 import com.scott.transer.task.ITaskHandler;
 import com.scott.transer.task.SimpleTaskHandlerListenner;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.Permission;
 
 import java.io.File;
 import java.util.List;
@@ -32,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
+        AndPermission.with(this)
+                .permission(Permission.STORAGE)
+                .callback(this)
+                .start();
     }
 
     @OnClick(R.id.btn_simple_download)

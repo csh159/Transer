@@ -23,10 +23,6 @@ public interface ITaskHandler extends ITaskHolder{
 
     void stop();
 
-    void pause();
-
-    void resume();
-
     Map<String,String> getHeaders();
 
     Map<String,String> getParams();

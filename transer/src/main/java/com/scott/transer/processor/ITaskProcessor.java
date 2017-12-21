@@ -18,8 +18,6 @@ public interface ITaskProcessor {
 
     void setTaskManager(ITaskManager manager);
 
-    void setTaskHolders(List<ITaskHolder> taskHolders);
-
     void addTask(ITask task);
 
     void addTasks(List<ITask> tasks);

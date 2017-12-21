@@ -37,16 +37,6 @@ public class SimpleTaskHandlerListenner implements ITaskHandlerListenner {
     }
 
     @Override
-    public void onResume(ITask params) {
-
-    }
-
-    @Override
-    public void onPause(ITask params) {
-
-    }
-
-    @Override
     public void onFinished(ITask task) {
 
     }

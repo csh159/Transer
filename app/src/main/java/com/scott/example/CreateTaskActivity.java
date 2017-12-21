@@ -4,6 +4,7 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
@@ -13,8 +14,6 @@ import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.processor.ITaskCmd;
 import com.scott.transer.processor.TaskCmdBuilder;
 import com.scott.transer.task.TaskBuilder;
-
-import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,10 +27,13 @@ public class CreateTaskActivity extends AppCompatActivity {
     @BindView(R.id.edit_dest)
     EditText editUrl;
 
-    final TaskType TASK_TYPE = TaskType.TYPE_DOWNLOAD;
+    @BindView(R.id.rg_type)
+    RadioGroup radioGroup;
+
+    private TaskType task_type = TaskType.TYPE_DOWNLOAD;
 
     final String NAME = "test.zip";
-    final String DOWNLOAD_PATH = Environment.getExternalStorageDirectory() + File.separator + "test.zip";
+    final String DOWNLOAD_PATH = Environment.getExternalStorageDirectory().toString();
     final String DOWNLOAD_URL = "http://" + Contacts.TEST_HOST + "/WebDemo/test.zip";
     final String UPLOAD_PATH = DOWNLOAD_PATH;
     final String UPLOAD_URL = "http://" + Contacts.TEST_HOST + "/WebDemo/UploadManager";
@@ -42,7 +44,8 @@ public class CreateTaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_task);
         ButterKnife.bind(this);
 
-        switch (TASK_TYPE) {
+
+        switch (task_type) {
             case TYPE_DOWNLOAD:
                 editPath.setText(DOWNLOAD_PATH);
                 editUrl.setText(DOWNLOAD_URL);
@@ -61,7 +64,13 @@ public class CreateTaskActivity extends AppCompatActivity {
         String source = null;
         String dest = null;
 
-        switch (TASK_TYPE) {
+        if(radioGroup.getCheckedRadioButtonId() == R.id.rb_upload) {
+            task_type = TaskType.TYPE_UPLOAD;
+        } else {
+            task_type = TaskType.TYPE_DOWNLOAD;
+        }
+
+        switch (task_type) {
             case TYPE_UPLOAD:
                 source = editPath.getText().toString();
                 dest = editUrl.getText().toString();
@@ -73,15 +82,14 @@ public class CreateTaskActivity extends AppCompatActivity {
         }
 
         ITask task = new TaskBuilder()
-                .setTaskType(TASK_TYPE)
+                .setTaskType(task_type)
                 .setDataSource(source)
                 .setDestSource(dest)
-                .setTaskType(TASK_TYPE)
                 .setName(NAME)
                 .build();
 
         ITaskCmd cmd = new TaskCmdBuilder()
-                .setTaskType(TASK_TYPE)
+                .setTaskType(task_type)
                 .setProcessType(ProcessType.TYPE_ADD_TASK)
                 .setTask(task)
                 .build();

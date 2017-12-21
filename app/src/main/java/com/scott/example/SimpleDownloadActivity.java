@@ -68,7 +68,7 @@ public class SimpleDownloadActivity extends AppCompatActivity {
 
     final String URL = "http://" + Contacts.TEST_HOST + "/WebDemo/test.zip";
     final String FILE_PATH = Environment.getExternalStorageDirectory().toString() + File.separator + "test.zip";
-    final String FILE_MD5 = "2d1a9343e2f076d233d8bf5f0c3bf17f";
+    final String FILE_MD5 = "6e952b14ef2b2edaf4701326bfdf335c";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +116,7 @@ public class SimpleDownloadActivity extends AppCompatActivity {
             @Override
             public void onSpeedChanged(long speed, ITask params) {
                 super.onSpeedChanged(speed, params);
-                Debugger.error("OnlyDownloadActivity","speed = " + getFileSize(speed) + "/s");
+                //Debugger.error("OnlyDownloadActivity","speed = " + getFileSize(speed) + "/s");
             }
         });
 
@@ -130,21 +130,11 @@ public class SimpleDownloadActivity extends AppCompatActivity {
         mHandler.stop();
     }
 
-    @OnClick(R.id.btn_pause)
-    public void pause() {
-        mHandler.pause();
-    }
-
     @OnClick(R.id.btn_start)
     public void start() {
         File file = new File(FILE_PATH);
         file.delete();
         mHandler.start();
-    }
-
-    @OnClick(R.id.btn_resume)
-    public void resume() {
-        mHandler.resume();
     }
 
     private String getFileSize(long size) {

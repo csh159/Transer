@@ -30,12 +30,6 @@ public class TaskProcessorProxy implements ITaskProcessor {
     }
 
     @Override
-    public void setTaskHolders(List<ITaskHolder> taskHolders) {
-        mProcessor.setTaskHolders(taskHolders);
-        mDbProcessor.setTaskHolders(taskHolders);
-    }
-
-    @Override
     public void addTask(ITask task) {
         mProcessor.addTask(task);
         mDbProcessor.addTask(task);

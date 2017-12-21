@@ -21,10 +21,6 @@ public interface ITaskHandlerListenner {
 
     void onPiceSuccessful(ITask params);
 
-    void onResume(ITask params);
-
-    void onPause(ITask params);
-
     void onFinished(ITask task);
 
 }

@@ -4,6 +4,8 @@
     android:layout_height="match_parent"
     android:padding="10dp">
     <ListView
+        android:divider="@android:color/white"
+        android:dividerHeight="4dp"
         android:id="@+id/rcy_tasks"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

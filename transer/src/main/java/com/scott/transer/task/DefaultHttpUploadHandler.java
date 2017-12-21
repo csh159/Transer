@@ -5,6 +5,7 @@ import com.scott.transer.http.OkHttpProxy;
 import com.scott.transer.utils.Debugger;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -159,6 +160,9 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
                 sink.flush();
                 mCurrentCompleteLength += len;
             }
+
+            mSource.reset();
+            mSource.close();
         }
     }
 }

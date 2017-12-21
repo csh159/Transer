@@ -1,5 +1,6 @@
 package com.scott.example.adapter;
 
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,8 +10,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.scott.annotionprocessor.ITask;
+import com.scott.annotionprocessor.ProcessType;
 import com.scott.example.R;
 import com.scott.example.utils.SizeUtils;
+import com.scott.transer.event.TaskEventBus;
+import com.scott.transer.processor.ITaskCmd;
+import com.scott.transer.processor.TaskCmdBuilder;
+import com.scott.transer.task.TaskState;
 
 import java.util.List;
 
@@ -23,7 +29,7 @@ import butterknife.ButterKnife;
  * <P>Email: shilec@126.com</p>
  */
 
-public class TaskListAdapter extends BaseAdapter implements View.OnClickListener{
+public class TaskListAdapter extends BaseAdapter {
 
     private List<ITask> mTasks;
 
@@ -59,10 +65,11 @@ public class TaskListAdapter extends BaseAdapter implements View.OnClickListener
             holder = (TaskViewHolder) view.getTag();
         }
 
-        holder.btnPasue.setOnClickListener(this);
-        holder.btnStart.setOnClickListener(this);
-        holder.btnResume.setOnClickListener(this);
-        holder.btnStop.setOnClickListener(this);
+        BtnClickListenner l = new BtnClickListenner(i);
+        holder.btnPasue.setOnClickListener(l);
+        holder.btnStart.setOnClickListener(l);
+        holder.btnResume.setOnClickListener(l);
+        holder.btnStop.setOnClickListener(l);
 
         ITask task = mTasks.get(i);
         holder.tvName.setText(task.getName());
@@ -76,9 +83,35 @@ public class TaskListAdapter extends BaseAdapter implements View.OnClickListener
         return view;
     }
 
-    @Override
-    public void onClick(View view) {
+    private final class BtnClickListenner implements View.OnClickListener {
 
+        int index = 0;
+
+        BtnClickListenner(int index) {
+            this.index = index;
+        }
+
+        @Override
+        public void onClick(View v) {
+            int state;
+            switch (v.getId()) {
+                case R.id.btn_start:
+                    state = TaskState.STATE_START;
+                    break;
+                case R.id.btn_stop:
+                    state = TaskState.STATE_STOP;
+                    break;
+                default:
+                    state = TaskState.STATE_RUNNING;
+            }
+
+            ITaskCmd cmd = new TaskCmdBuilder()
+                    .setTask(mTasks.get(index))
+                    .setProcessType(ProcessType.TYPE_CHANGE_TASK)
+                    .setState(state)
+                    .build();
+            TaskEventBus.getDefault().execute(cmd);
+        }
     }
 
     public static final class TaskViewHolder {

@@ -10,7 +10,7 @@ import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.DatabaseStatement;
 
 import com.scott.annotionprocessor.TaskType;
-import com.scott.transer.task.Task.TaskTypeConverter;
+import com.scott.transer.task.TaskTypeConverter;
 
 import com.scott.transer.task.Task;
 
@@ -18,7 +18,7 @@ import com.scott.transer.task.Task;
 /** 
  * DAO for table "TASK".
 */
-public class TaskDao extends AbstractDao<Task, Void> {
+public class TaskDao extends AbstractDao<Task, String> {
 
     public static final String TABLENAME = "TASK";
 
@@ -33,7 +33,7 @@ public class TaskDao extends AbstractDao<Task, Void> {
         public final static Property Length = new Property(3, long.class, "length", false, "LENGTH");
         public final static Property StartOffset = new Property(4, long.class, "startOffset", false, "START_OFFSET");
         public final static Property EndOffset = new Property(5, long.class, "endOffset", false, "END_OFFSET");
-        public final static Property TaskId = new Property(6, String.class, "taskId", false, "TASK_ID");
+        public final static Property TaskId = new Property(6, String.class, "taskId", true, "TASK_ID");
         public final static Property GroupId = new Property(7, String.class, "groupId", false, "GROUP_ID");
         public final static Property GroupName = new Property(8, String.class, "groupName", false, "GROUP_NAME");
         public final static Property CompleteTime = new Property(9, long.class, "completeTime", false, "COMPLETE_TIME");
@@ -65,7 +65,7 @@ public class TaskDao extends AbstractDao<Task, Void> {
                 "\"LENGTH\" INTEGER NOT NULL ," + // 3: length
                 "\"START_OFFSET\" INTEGER NOT NULL ," + // 4: startOffset
                 "\"END_OFFSET\" INTEGER NOT NULL ," + // 5: endOffset
-                "\"TASK_ID\" TEXT," + // 6: taskId
+                "\"TASK_ID\" TEXT PRIMARY KEY NOT NULL ," + // 6: taskId
                 "\"GROUP_ID\" TEXT," + // 7: groupId
                 "\"GROUP_NAME\" TEXT," + // 8: groupName
                 "\"COMPLETE_TIME\" INTEGER NOT NULL ," + // 9: completeTime
@@ -198,8 +198,8 @@ public class TaskDao extends AbstractDao<Task, Void> {
     }
 
     @Override
-    public Void readKey(Cursor cursor, int offset) {
-        return null;
+    public String readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6);
     }    
 
     @Override
@@ -246,20 +246,22 @@ public class TaskDao extends AbstractDao<Task, Void> {
      }
     
     @Override
-    protected final Void updateKeyAfterInsert(Task entity, long rowId) {
-        // Unsupported or missing PK type
-        return null;
+    protected final String updateKeyAfterInsert(Task entity, long rowId) {
+        return entity.getTaskId();
     }
     
     @Override
-    public Void getKey(Task entity) {
-        return null;
+    public String getKey(Task entity) {
+        if(entity != null) {
+            return entity.getTaskId();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public boolean hasKey(Task entity) {
-        // TODO
-        return false;
+        return entity.getTaskId() != null;
     }
 
     @Override

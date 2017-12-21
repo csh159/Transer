@@ -2,9 +2,11 @@ package com.scott.transer.task;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
+import com.scott.transer.utils.NumberUtils;
 
 import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.converter.PropertyConverter;
 import org.greenrobot.greendao.annotation.Generated;
@@ -27,6 +29,7 @@ public class Task implements ITask {
     private long length;
     private long startOffset;
     private long endOffset;
+    @Id
     private String taskId;
     private String groupId;
     private String groupName;
@@ -35,37 +38,6 @@ public class Task implements ITask {
     private int state;
     private String name;
     private long speed;
-
-    public static final class TaskTypeConverter implements PropertyConverter<TaskType,Integer> {
-
-        @Override
-        public TaskType convertToEntityProperty(Integer databaseValue) {
-            TaskType taskType = TaskType.TYPE_UPLOAD;
-            switch (databaseValue) {
-                case 0:
-                    taskType = TaskType.TYPE_UPLOAD;
-                    break;
-                case 1:
-                    taskType = TaskType.TYPE_DOWNLOAD;
-                    break;
-            }
-            return taskType;
-        }
-
-        @Override
-        public Integer convertToDatabaseValue(TaskType entityProperty) {
-            int value = 0;
-            switch (entityProperty) {
-                case TYPE_DOWNLOAD:
-                    value = 1;
-                    break;
-                case TYPE_UPLOAD:
-                    value = 1;
-                    break;
-            }
-            return value;
-        }
-    }
 
     @Convert(converter = TaskTypeConverter.class,columnType = Integer.class)
     private TaskType type;
@@ -90,7 +62,7 @@ public class Task implements ITask {
         this.name = builder.getName();
 
         if(taskId == null) {
-            taskId = dataSource.hashCode() + destSource.hashCode() + System.currentTimeMillis() + "";
+            taskId = NumberUtils.getRandomStr(0);
         }
 
         if(sesstionId == null) {

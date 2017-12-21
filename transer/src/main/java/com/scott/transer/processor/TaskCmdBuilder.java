@@ -121,7 +121,7 @@ public class TaskCmdBuilder implements ITaskCmdBuilder {
     }
 
     @Override
-    public ProcessType getOperationType() {
+    public ProcessType getProceeType() {
         return processType;
     }
 

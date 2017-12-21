@@ -37,4 +37,6 @@ dependencies {
     compile project(':transer')
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:+'
+    compile 'com.yanzhenjie:permission:1.1.2'
+
 }

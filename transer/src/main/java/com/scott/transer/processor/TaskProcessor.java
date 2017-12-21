@@ -27,11 +27,7 @@ public class TaskProcessor implements ITaskProcessor {
     @Override
     public void setTaskManager(ITaskManager manager) {
         mTaskManager = manager;
-    }
-
-    @Override
-    public void setTaskHolders(List<ITaskHolder> taskHolders) {
-        mTasks = taskHolders;
+        mTasks = manager.getTasks();
     }
 
     @Override
@@ -182,9 +178,8 @@ public class TaskProcessor implements ITaskProcessor {
 
     private void changeState(ITaskHolder holder,int state) {
         ITaskHandlerHolder handlerHolder = (ITaskHandlerHolder) holder;
-        if(handlerHolder == null) {
+        if(handlerHolder.getTaskHandler() == null) {
             handlerHolder.setTaskHandler(mTaskManager.getTaskHandler(holder.getType()));
-            handlerHolder.setTask(holder.getTask());
         }
         handlerHolder.setState(state);
     }

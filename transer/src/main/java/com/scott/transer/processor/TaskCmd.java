@@ -22,17 +22,20 @@ public class TaskCmd implements ITaskCmd{
 
     @Override
     public String getTaskId() {
-        return mBuilder.getTaskId();
+        return mBuilder.getTask() == null ?
+                mBuilder.getTaskId() : mBuilder.getTask().getTaskId();
     }
 
     @Override
     public String getGroupId() {
-        return mBuilder.getGroupId();
+        return mBuilder.getTask() == null ?
+                mBuilder.getGroupId() : mBuilder.getTask().getGroupId();
     }
 
     @Override
     public int getState() {
-        return mBuilder.getState();
+        return mBuilder.getTask() == null ?
+                mBuilder.getState() : mBuilder.getState();
     }
 
     @Override
@@ -51,12 +54,13 @@ public class TaskCmd implements ITaskCmd{
     }
 
     @Override
-    public ProcessType getOperationType() {
-        return mBuilder.getOperationType();
+    public ProcessType getProceeType() {
+        return mBuilder.getProceeType();
     }
 
     @Override
     public TaskType getTaskType() {
-        return mBuilder.getTaskType();
+        return mBuilder.getTask() == null ?
+                mBuilder.getTaskType() : mBuilder.getTask().getType();
     }
 }

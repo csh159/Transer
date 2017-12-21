@@ -82,7 +82,9 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
             stop();
             return;
         }
-        Debugger.info(DefaultHttpDownloadHandler.class.getSimpleName(),"=================== fileLength = " + mFile.length());
+        Debugger.info(DefaultHttpDownloadHandler.class.getSimpleName(),
+                "=================== fileLength = " + mFile.length() + "," +
+                        task.getStartOffset());
 
         if(task.getStartOffset() != 0) {
             mFile.seek(task.getStartOffset());
@@ -93,6 +95,8 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
                 .header("Range","bytes=" +
                         task.getStartOffset() + "-" + mFileSize)
                 .build();
+        Debugger.error(DefaultHttpDownloadHandler.class.getSimpleName()," ====== startOffset = " + task.getStartOffset()
+                + ", fileSize = " + mFileSize);
         OkHttpClient client = OkHttpProxy.getClient();
         Call call = client.newCall(request);
         Response response = call.execute();

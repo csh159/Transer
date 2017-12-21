@@ -27,7 +27,7 @@ public interface ITaskCmd {
 
     String[] getTaskIds();
 
-    ProcessType getOperationType();
+    ProcessType getProceeType();
 
     TaskType getTaskType();
 }

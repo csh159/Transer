@@ -34,18 +34,15 @@ public class TaskHandlerHolder implements ITaskHandlerHolder {
 
     @Override
     public ITask getTask() {
-        if(mHandler == null) {
-            return mTask;
+        if(mHandler != null && mHandler.getTask() != null) {
+            return mHandler.getTask();
         }
-        return mHandler.getTask();
+        return mTask;
     }
 
     @Override
     public void setTask(ITask task) {
         mTask = task;
-        if(mHandler != null) {
-            mHandler.setTask(task);
-        }
     }
 
     @Override
@@ -59,6 +56,9 @@ public class TaskHandlerHolder implements ITaskHandlerHolder {
     @Override
     public void setTaskHandler(ITaskHandler handler) {
         mHandler = handler;
+        if(handler != null) {
+            mHandler.setTask(mTask);
+        }
     }
 
     @Override
