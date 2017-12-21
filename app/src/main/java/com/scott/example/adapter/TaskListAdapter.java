@@ -16,6 +16,7 @@ import com.scott.example.utils.SizeUtils;
 import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.processor.ITaskCmd;
 import com.scott.transer.processor.TaskCmdBuilder;
+import com.scott.transer.task.Task;
 import com.scott.transer.task.TaskState;
 
 import java.util.List;
@@ -78,6 +79,11 @@ public class TaskListAdapter extends BaseAdapter {
         double progress = (double)task.getCompleteLength() / (double)task.getLength();
         progress = progress * 100f;
         holder.progressLength.setProgress((int) progress);
+
+        if(task.getState() == TaskState.STATE_FINISH) {
+            holder.progressLength.setProgress(100);
+            holder.tvCompleteLength.setText(SizeUtils.getFileSize(task.getCompleteLength()));
+        }
         return view;
     }
 

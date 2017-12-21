@@ -15,8 +15,11 @@ import com.scott.transer.processor.ITaskCmd;
 import com.scott.transer.processor.TaskCmdBuilder;
 import com.scott.transer.task.TaskBuilder;
 
+import java.io.File;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 
 public class CreateTaskActivity extends AppCompatActivity {
@@ -30,11 +33,11 @@ public class CreateTaskActivity extends AppCompatActivity {
     @BindView(R.id.rg_type)
     RadioGroup radioGroup;
 
-    private TaskType task_type = TaskType.TYPE_DOWNLOAD;
+    private TaskType task_type = TaskType.TYPE_UPLOAD;
 
     final String NAME = "test.zip";
-    final String DOWNLOAD_PATH = Environment.getExternalStorageDirectory().toString();
-    final String DOWNLOAD_URL = "http://" + Contacts.TEST_HOST + "/WebDemo/test.zip";
+    final String DOWNLOAD_PATH = Environment.getExternalStorageDirectory().toString() + File.separator + NAME;
+    final String DOWNLOAD_URL = "http://" + Contacts.TEST_HOST + "/WebDemo/DownloadManager?path=" + NAME;
     final String UPLOAD_PATH = DOWNLOAD_PATH;
     final String UPLOAD_URL = "http://" + Contacts.TEST_HOST + "/WebDemo/UploadManager";
 
@@ -43,7 +46,6 @@ public class CreateTaskActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_task);
         ButterKnife.bind(this);
-
 
         switch (task_type) {
             case TYPE_DOWNLOAD:
@@ -55,7 +57,22 @@ public class CreateTaskActivity extends AppCompatActivity {
                 editUrl.setText(UPLOAD_URL);
                 break;
         }
+    }
 
+    @OnCheckedChanged(R.id.rb_upload)
+    public void uploadCheck(boolean checked) {
+        if(checked) {
+            editPath.setText(UPLOAD_PATH);
+            editUrl.setText(UPLOAD_URL);
+        }
+    }
+
+    @OnCheckedChanged(R.id.rb_download)
+    public void downloadCheck(boolean checked) {
+        if(checked) {
+            editUrl.setText(DOWNLOAD_URL);
+            editPath.setText(DOWNLOAD_PATH);
+        }
     }
 
     @OnClick(R.id.btn_create_task)

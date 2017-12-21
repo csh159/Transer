@@ -171,8 +171,8 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 mHandleRunnable.run();
             }
 
-            mStateThread = new Thread(mStateRunnable);
-            mStateThread.start();
+            //mStateThread = new Thread(mStateRunnable);
+            //mStateThread.start();
             mTask.setState(TaskState.STATE_RUNNING);
         }
     }
@@ -257,6 +257,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                             .setGroupName(mTask.getGroupName())
                             .setState(mTask.getState())
                             .setGroupId(mTask.getGroupId())
+                            .setSpeed((long) ((getCurrentCompleteLength() - mLastCompleteLength) / ( MAX_DELAY_TIME / 1000f)))
                             .build();
                     if(getCurrentCompleteLength() == mLastCompleteLength) continue;
                     mListenner.onSpeedChanged((long) ((getCurrentCompleteLength() - mLastCompleteLength) / ( MAX_DELAY_TIME / 1000f)), task);

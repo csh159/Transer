@@ -57,7 +57,6 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-        Debugger.error(DefaultHttpDownloadHandler.class.getSimpleName(),"====release()==========");
     }
 
     @Override
@@ -88,9 +87,7 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
             }
         }
 
-        String path = task.getName() == null ? task.getDestSource() :
-                task.getDestSource() + File.separator + task.getName();
-        mFile = new RandomAccessFile(path,"rw");
+        mFile = new RandomAccessFile(getTask().getDestSource(),"rw");
         mFileSize = getNetSize(url); //从服务端获取文件大小
 
         //如果本地文件大小和服务端文件大小相同，则不进行重复下载
