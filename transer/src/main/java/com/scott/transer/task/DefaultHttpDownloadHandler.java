@@ -55,7 +55,7 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NullPointerException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -92,7 +92,6 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
 
         //如果本地文件大小和服务端文件大小相同，则不进行重复下载
         if(mFile.length() == mFileSize && mFileSize != 0) {
-            stop();
             return;
         }
         //将文件指针移动到末尾
@@ -112,7 +111,6 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
         Call call = client.newCall(request);
         Response response = call.execute();
         if(!response.isSuccessful()) {
-            stop();
             return;
         }
         ResponseBody body = response.body();

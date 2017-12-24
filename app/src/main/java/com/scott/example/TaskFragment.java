@@ -88,7 +88,7 @@ public class TaskFragment extends Fragment {
     }
 
     private void onTasksChange(final List<ITask> tasks) {
-        if (tasks == null || tasks.isEmpty()) {
+        if (tasks == null) {
             return;
         }
 

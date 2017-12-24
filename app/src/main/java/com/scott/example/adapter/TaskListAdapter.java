@@ -15,6 +15,7 @@ import com.scott.example.R;
 import com.scott.example.utils.SizeUtils;
 import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.processor.ITaskCmd;
+import com.scott.transer.processor.ITaskCmdBuilder;
 import com.scott.transer.processor.TaskCmdBuilder;
 import com.scott.transer.task.Task;
 import com.scott.transer.task.TaskState;
@@ -69,6 +70,7 @@ public class TaskListAdapter extends BaseAdapter {
         BtnClickListenner l = new BtnClickListenner(i);
         holder.btnStart.setOnClickListener(l);
         holder.btnStop.setOnClickListener(l);
+        holder.btnDelete.setOnClickListener(l);
 
         ITask task = mTasks.get(i);
         holder.tvName.setText(task.getName());
@@ -95,26 +97,26 @@ public class TaskListAdapter extends BaseAdapter {
             this.index = index;
         }
 
+        ITaskCmdBuilder builder = new TaskCmdBuilder()
+                .setTask(mTasks.get(index));
+
         @Override
         public void onClick(View v) {
-            int state;
             switch (v.getId()) {
                 case R.id.btn_start:
-                    state = TaskState.STATE_START;
+                    builder.setState(TaskState.STATE_START);
+                    builder.setProcessType(ProcessType.TYPE_CHANGE_TASK);
                     break;
                 case R.id.btn_stop:
-                    state = TaskState.STATE_STOP;
+                    builder.setState(TaskState.STATE_STOP);
+                    builder.setProcessType(ProcessType.TYPE_CHANGE_TASK);
                     break;
-                default:
-                    state = TaskState.STATE_RUNNING;
+                case R.id.btn_delete:
+                    builder.setProcessType(ProcessType.TYPE_DELETE_TASK);
+                    break;
             }
 
-            ITaskCmd cmd = new TaskCmdBuilder()
-                    .setTask(mTasks.get(index))
-                    .setProcessType(ProcessType.TYPE_CHANGE_TASK)
-                    .setState(state)
-                    .build();
-            TaskEventBus.getDefault().execute(cmd);
+            TaskEventBus.getDefault().execute(builder.build());
         }
     }
 
@@ -141,6 +143,9 @@ public class TaskListAdapter extends BaseAdapter {
 
         @BindView(R.id.btn_start)
         Button btnStart;
+
+        @BindView(R.id.btn_delete)
+        Button btnDelete;
 
         @BindView(R.id.btn_stop)
         Button btnStop;

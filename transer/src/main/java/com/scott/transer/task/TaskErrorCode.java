@@ -17,4 +17,6 @@ public interface TaskErrorCode {
     int ERROR_CODE_EXCEPTION = 0X100004;
 
     int ERROR_CODE_NETWORK = 0X100005;
+
+    int ERROR_FILE_EMPTY = 0X100006;
 }

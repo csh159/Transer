@@ -1,5 +1,7 @@
 package com.scott.transer.task;
 
+import android.text.TextUtils;
+
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
 
@@ -59,6 +61,16 @@ public class TaskHandlerHolder implements ITaskHandlerHolder {
         if(handler != null) {
             mHandler.setTask(mTask);
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof ITaskHandlerHolder)) {
+            return false;
+        }
+
+        ITaskHandlerHolder holder = (ITaskHandlerHolder) obj;
+        return TextUtils.equals(mTask.getTaskId(),holder.getTask().getTaskId());
     }
 
     @Override

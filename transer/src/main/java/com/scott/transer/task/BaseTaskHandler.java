@@ -108,8 +108,13 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         mLastCompleteLength = task.getCompleteLength();
         //开始任务前准备任务数据，初始化源数据流
         prepare(task);
+
+        if(fileSize() == 0) {
+            isExit = true;
+            return;
+        }
         //获取到的源数据大小设置到task
-        ((Task) task).setLength(fileSize());
+        mTask.setLength(fileSize());
         mListenner.onStart(mTask);
         Debugger.error(TAG,"start ============= length = " + task.getLength() + "" +
                 ",completeLength = " + task.getCompleteLength() + ",startOffset = " + task.getStartOffset() + ",endOffset = " + task.getEndOffset());
@@ -120,7 +125,8 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             int piceSize = getPiceRealSize(); //获取当前读取一片的实际大小
 
             //如果读取到源数据的末尾
-            if(piceSize == -1) {
+            if(piceSize == -1 || piceSize == 0) {
+                mTask.setCompleteLength(mTask.getLength());
                 isExit = true;
                 break;
             }
@@ -146,6 +152,8 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             mTask.setState(TaskState.STATE_ERROR);
             mListenner.onError(TaskErrorCode.ERROR_FINISH,mTask);
         } else {
+            mTask.setCompleteLength(mTask.getLength());
+            mTask.setCompleteTime(System.currentTimeMillis());
             mTask.setState(TaskState.STATE_FINISH);
             mListenner.onFinished(mTask);
         }

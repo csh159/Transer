@@ -65,6 +65,7 @@ public class SimpleDownloadActivity extends AppCompatActivity {
     final String URL = "http://" + Contacts.TEST_HOST + "/WebDemo/DownloadManager";
     final String FILE_PATH = Environment.getExternalStorageDirectory().toString() + File.separator + "test.zip";
     final String FILE_MD5 = "de37fe1c8f049bdd83090d40f806cd67";
+    final String TAG = SimpleDownloadActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +80,7 @@ public class SimpleDownloadActivity extends AppCompatActivity {
                 .setDataSource(URL)
                 .setDestSource(FILE_PATH)
                 .build();
+
         mHandler.setTask(task);
         Map<String,String> params = new HashMap<>();
         params.put("path","test.zip");
@@ -100,12 +102,25 @@ public class SimpleDownloadActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFinished(ITask task) {
+            public void onError(int code, ITask params) {
+                super.onError(code, params);
+                Debugger.error(TAG,"error === " + params);
+            }
+
+            @Override
+            public void onFinished(final ITask task) {
+                Debugger.error(TAG,"finished === " + task);
                 super.onFinished(task);
                 final String newMd5 = getFileMD5(new File(FILE_PATH));
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        tvCompleteLength.setText(getFileSize(task.getCompleteLength()));
+                        tvAllLength.setText(getFileSize(task.getLength()));
+
+                        double progress = (double)task.getCompleteLength() / (double)task.getLength();
+                        progress = progress * 100f;
+                        progressLength.setProgress((int) progress);
                         tvNewMd5.setText(newMd5);
                         tvEquals.setText(TextUtils.equals(newMd5,FILE_MD5) + "");
                     }

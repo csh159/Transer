@@ -76,12 +76,33 @@ public class SimpleUploadActivity extends AppCompatActivity {
         mHandler.setHandlerListenner(new SimpleTaskHandlerListenner() {
             @Override
             public void onPiceSuccessful(final ITask params) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tvCompleteLength.setText(getFileSize(params.getCompleteLength()));
+                        tvAllLength.setText(getFileSize(params.getLength()));
 
+                        double progress = (double)params.getCompleteLength() / (double)params.getLength();
+                        progress = progress * 100f;
+                        progressLength.setProgress((int) progress);
+                    }
+                });
             }
 
             @Override
-            public void onFinished(ITask task) {
+            public void onFinished(final ITask task) {
                 super.onFinished(task);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tvCompleteLength.setText(getFileSize(task.getCompleteLength()));
+                        tvAllLength.setText(getFileSize(task.getLength()));
+
+                        double progress = (double)task.getCompleteLength() / (double)task.getLength();
+                        progress = progress * 100f;
+                        progressLength.setProgress((int) progress);
+                    }
+                });
                 Debugger.error(TAG,"========onFinished============");
             }
 

@@ -76,12 +76,16 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
         OkHttpClient client = OkHttpProxy.getClient();
         Call call = client.newCall(request);
 
+        mResponse = null;
+        Debugger.error(TAG,"wait response === ");
         Response execute = call.execute();
+        Debugger.error(TAG,"wait2 response === ");
         if(!execute.isSuccessful()) {
             return;
         }
         ResponseBody body = execute.body();
         mResponse = body.string();
+        Debugger.error(TAG,"response === " + mResponse);
     }
 
     @Override

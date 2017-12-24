@@ -76,6 +76,14 @@
             android:id="@+id/btn_stop"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
+        <Button
+            android:layout_weight="1"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
+            android:text="删除"
+            android:id="@+id/btn_delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 </RelativeLayout>
