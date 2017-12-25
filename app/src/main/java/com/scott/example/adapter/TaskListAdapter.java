@@ -97,11 +97,10 @@ public class TaskListAdapter extends BaseAdapter {
             this.index = index;
         }
 
-        ITaskCmdBuilder builder = new TaskCmdBuilder()
-                .setTask(mTasks.get(index));
-
         @Override
         public void onClick(View v) {
+            ITaskCmdBuilder builder = new TaskCmdBuilder()
+                    .setTask(mTasks.get(index));
             switch (v.getId()) {
                 case R.id.btn_start:
                     builder.setState(TaskState.STATE_START);

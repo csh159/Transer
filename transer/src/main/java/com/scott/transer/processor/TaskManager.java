@@ -157,7 +157,7 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
 
     @Override
     public void onStart(ITask params) {
-        Debugger.error(TAG,"start = " + params);
+        //Debugger.error(TAG,"start = " + params);
         synchronized (mProcessorProxy) {
             mProcessorProxy.updateTask(params);
             mCallback.onFinished(params.getType(), ProcessType.TYPE_CHANGE_TASK, null);
@@ -166,7 +166,7 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
 
     @Override
     public void onStop(ITask params) {
-        Debugger.error(TAG,"stop = " + params);
+        //Debugger.error(TAG,"stop = " + params);
         synchronized (mProcessorProxy) {
             mProcessorProxy.updateTask(params);
             mCallback.onFinished(params.getType(), ProcessType.TYPE_CHANGE_TASK, null);
@@ -175,7 +175,7 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
 
     @Override
     public void onError(int code, ITask params) {
-        Debugger.error(TAG,"error = " + params);
+        //Debugger.error(TAG,"error = " + params);
         synchronized (mProcessorProxy) {
             mProcessorProxy.updateTask(params);
             mCallback.onFinished(params.getType(), ProcessType.TYPE_CHANGE_TASK, null);
@@ -201,7 +201,7 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
 
     @Override
     public void onFinished(ITask task) {
-        Debugger.error(TAG,"finished = " + task);
+        //Debugger.error(TAG,"finished = " + task);
         //完成的任务释放handler,减少占用的内存
         for(ITaskHolder holder : mTasks) {
             if(holder.getTask().getTaskId() == task.getTaskId()) {

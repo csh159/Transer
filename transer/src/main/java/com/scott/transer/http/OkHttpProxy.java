@@ -10,7 +10,6 @@ import okhttp3.OkHttpClient;
 /**
  * <p>Author:    shijiale</p>
  * <p>Date:      2017/3/15.<p>
- * <p>Email:     shijl4@lenovo.com<p>
  * <p>Describe:
  */
 

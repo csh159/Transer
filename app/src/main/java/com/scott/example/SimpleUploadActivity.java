@@ -122,6 +122,12 @@ public class SimpleUploadActivity extends AppCompatActivity {
                 });
                 Debugger.error("OnlyDownloadActivity","speed = " + getFileSize(speed) + "/s");
             }
+
+            @Override
+            public void onError(int code, ITask params) {
+                super.onError(code, params);
+                Debugger.error("SimpleUploadActivity","error " + code);
+            }
         });
 
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
