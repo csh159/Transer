@@ -4,7 +4,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/rl_container"
     tools:context="com.scott.example.SimpleTaskListActivity">
-
+    <LinearLayout
+        android:id="@+id/ll_menus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:text="START_ALL"
+            android:id="@+id/btn_start_all"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <Button
+            android:text="STOP_ALL"
+            android:id="@+id/btn_stop_all"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <Button
+            android:text="DELETE_ALL"
+            android:id="@+id/btn_delete_all"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/rl_container"
+        android:layout_below="@+id/ll_menus"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </LinearLayout>
 </RelativeLayout>

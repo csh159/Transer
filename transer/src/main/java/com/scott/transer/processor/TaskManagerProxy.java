@@ -2,9 +2,13 @@ package com.scott.transer.processor;
 
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.ITask;
+import com.scott.transer.task.ITaskHandlerHolder;
+import com.scott.transer.task.ITaskHandlerListenner;
 import com.scott.transer.task.ITaskHolder;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.task.ITaskHandler;
+import com.scott.transer.task.TaskState;
+import com.scott.transer.utils.Debugger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +24,13 @@ import java.util.concurrent.ThreadPoolExecutor;
  * <p>Describe:</p>
  */
 
-public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback{
+public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback,ITaskHandlerListenner{
 
     private ITaskManager mManager;
     private ITaskProcessor mProcessor; //processor proxy
     private ExecutorService mCmdThreadPool; //cmd thread pool
     private ITaskProcessCallback mProcessCallback;
+    private final String TAG = TaskManagerProxy.class.getSimpleName();
 
     public TaskManagerProxy() {
         mCmdThreadPool = Executors.newSingleThreadExecutor();
@@ -36,7 +41,7 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
         mManager = manager;
         mManager.setProcessCallback(this);
         mManager.setTaskProcessor(mProcessor);
-        mProcessor.setTaskManager(mManager);
+        mProcessor.setTaskManager(this);
     }
 
     @Override
@@ -76,6 +81,7 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
     @Override
     public ITaskHandler getTaskHandler(TaskType taskType) {
         ITaskHandler taskHandler = mManager.getTaskHandler(taskType);
+        taskHandler.setHandlerListenner(this);
         return taskHandler;
     }
 
@@ -114,6 +120,70 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
 //        ITask[] objects1 = Arrays.copyOf(objects, objects.length);
 //        tasks = Arrays.asList(objects1);
         mProcessCallback.onFinished(taskType,processType,taskList);
+    }
+
+    @Override
+    public void onStart(ITask task) {
+        //Debugger.error(TAG,"start = " + params);
+        ITaskCmd cmd = new TaskCmdBuilder()
+                .setTask(task)
+                .setProcessType(ProcessType.TYPE_UPDATE_TASK)
+                .build();
+        process(cmd);
+    }
+
+    @Override
+    public void onStop(ITask task) {
+        //Debugger.error(TAG,"stop = " + params);
+        ITaskCmd cmd = new TaskCmdBuilder()
+                .setTask(task)
+                .setProcessType(ProcessType.TYPE_UPDATE_TASK)
+                .build();
+        process(cmd);
+    }
+
+    @Override
+    public void onError(int code, ITask task) {
+        //Debugger.error(TAG,"error = " + params);
+        ITaskCmd cmd = new TaskCmdBuilder()
+                .setTask(task)
+                .setState(TaskState.STATE_STOP)
+                .setProcessType(ProcessType.TYPE_UPDATE_TASK)
+                .build();
+        process(cmd);
+    }
+
+    @Override
+    public void onSpeedChanged(long speed, ITask task) {
+        ITaskCmd cmd = new TaskCmdBuilder()
+                .setTask(task)
+                .setProcessType(ProcessType.TYPE_UPDATE_TASK_WTIHOUT_SAVE)
+                .setState(TaskState.STATE_RUNNING)
+                .build();
+        process(cmd);
+        Debugger.error(TAG,"speed == " + task.getSpeed());
+    }
+
+    @Override
+    public void onPiceSuccessful(ITask task) {
+        //Debugger.error(TAG,"picesuccessful = " + params);
+        ITaskCmd cmd = new TaskCmdBuilder()
+                .setTask(task)
+                .setProcessType(ProcessType.TYPE_UPDATE_TASK)
+                .setState(TaskState.STATE_RUNNING)
+                .build();
+        process(cmd);
+    }
+
+    @Override
+    public void onFinished(ITask task) {
+        //Debugger.error(TAG,"finished = " + task);
+        ITaskCmd cmd = new TaskCmdBuilder()
+                .setTask(task)
+                .setProcessType(ProcessType.TYPE_UPDATE_TASK)
+                .setState(TaskState.STATE_FINISH)
+                .build();
+        process(cmd);
     }
 
 }

@@ -7,8 +7,10 @@ import com.scott.transer.task.ITaskHandlerHolder;
 import com.scott.transer.task.ITaskHandler;
 import com.scott.transer.task.TaskHandlerHolder;
 import com.scott.transer.task.TaskState;
+import com.scott.transer.utils.Debugger;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -23,6 +25,7 @@ public class TaskProcessor implements ITaskProcessor {
 
     private List<ITaskHolder> mTasks;
     private ITaskManager mTaskManager;
+    private final String TAG = TaskProcessor.class.getSimpleName();
 
     @Override
     public void setTaskManager(ITaskManager manager) {
@@ -102,12 +105,15 @@ public class TaskProcessor implements ITaskProcessor {
 
     @Override
     public void deleteAll(TaskType type) {
-        for(ITaskHolder holder : mTasks) {
-            if(holder.getType() == type) {
-                mTasks.remove(holder);
+
+        Iterator<ITaskHolder> iterator = mTasks.iterator();
+        while (iterator.hasNext()) {
+            ITaskHolder next = iterator.next();
+            if(next.getType() == type) {
+                next.setState(TaskState.STATE_STOP);
+                iterator.remove();
             }
         }
-        mTaskManager.getTaskThreadPool(type).shutdown();
     }
 
     @Override
@@ -220,10 +226,14 @@ public class TaskProcessor implements ITaskProcessor {
 
     @Override
     public void updateTask(ITask task) {
+        Debugger.error(TAG,"speed = " + task.getSpeed());
         for(ITaskHolder holder : mTasks) {
             ITask task1 = holder.getTask();
             if(task1.getTaskId() == task.getTaskId()) {
                 holder.setTask(task);
+                if(holder.getState() == TaskState.STATE_FINISH) {
+                    ((ITaskHandlerHolder)holder).setTaskHandler(null);
+                }
                 break;
             }
         }

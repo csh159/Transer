@@ -60,6 +60,7 @@ public class Task implements ITask {
         this.type = builder.getType();
         this.userId = builder.getUserId();
         this.name = builder.getName();
+        this.speed = builder.getSpeed();
 
         if(taskId == null) {
             taskId = NumberUtils.getRandomStr(0);

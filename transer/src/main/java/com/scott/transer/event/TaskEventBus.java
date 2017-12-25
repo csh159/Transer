@@ -2,10 +2,13 @@ package com.scott.transer.event;
 
 import android.content.Context;
 
+import com.scott.annotionprocessor.ThreadMode;
 import com.scott.transer.processor.ITaskCmd;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>Author:    shijiale</p>
@@ -18,6 +21,11 @@ public class TaskEventBus {
 
     EventDispatcher mDispatcher;
     volatile static TaskEventBus sInstance;
+    private Map<ThreadMode,ITaskPoster> mTaskPosters = new HashMap<>();
+
+    public ITaskPoster getTaskPoster(ThreadMode mode) {
+        return mTaskPosters.get(mode);
+    }
 
     static void init(Context context) {
         synchronized (TaskEventBus.class) {
@@ -30,6 +38,9 @@ public class TaskEventBus {
     TaskEventBus(Context context) {
         mDispatcher = new EventDispatcher(context);
         sInstance = this;
+        mTaskPosters.put(ThreadMode.MODE_ASYNC,new AsyncTaskPoster());
+        mTaskPosters.put(ThreadMode.MODE_MAIN,new MainTaskPoster());
+        mTaskPosters.put(ThreadMode.MODE_POSTING,new PostingTaskPoster());
     }
 
     public void regesit(Object obj) {

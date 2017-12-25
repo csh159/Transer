@@ -15,6 +15,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.METHOD})
 public @interface TaskSubscriber {
-    ProcessType[] processType() default ProcessType.TASK_DEFAULT;
+    ProcessType[] processType() default ProcessType.TYPE_DEFAULT;
     TaskType taskType() default TaskType.TYPE_UPLOAD;
+    ThreadMode threadMode() default ThreadMode.MODE_POSTING;
 }

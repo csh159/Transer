@@ -34,8 +34,7 @@ public class TaskCmd implements ITaskCmd{
 
     @Override
     public int getState() {
-        return mBuilder.getTask() == null ?
-                mBuilder.getState() : mBuilder.getState();
+        return mBuilder.getState();
     }
 
     @Override

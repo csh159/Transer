@@ -90,9 +90,10 @@ public class TaskDbProcessor implements ITaskProcessor {
 
     @Override
     public void deleteAll(TaskType type) {
+        TaskTypeConverter converter = new TaskTypeConverter();
         List<Task> tasks = mTaskDao
                 .queryBuilder()
-                .where(TaskDao.Properties.Type.eq(type))
+                .where(TaskDao.Properties.Type.eq(converter.convertToDatabaseValue(type)))
                 .list();
         mTaskDao.deleteInTx(tasks);
     }

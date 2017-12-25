@@ -1,10 +1,6 @@
 package com.scott.transer.processor;
 
-import com.scott.annotionprocessor.ITask;
-import com.scott.annotionprocessor.ProcessType;
 import com.scott.transer.task.ITaskHandler;
-import com.scott.transer.task.ITaskHandlerHolder;
-import com.scott.transer.task.ITaskHandlerListenner;
 import com.scott.transer.task.ITaskHolder;
 import com.scott.transer.task.TaskState;
 import com.scott.annotionprocessor.TaskType;
@@ -23,7 +19,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * <p>Describe:</p>
  */
 
-public class TaskManager implements ITaskManager , ITaskHandlerListenner{
+public class TaskManager implements ITaskManager {
 
     private ITaskProcessor mProcessorProxy;
     private ITaskProcessCallback mCallback;
@@ -87,11 +83,18 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
             case TYPE_QUERY_TASKS_STATE:
                 mProcessorProxy.getTasks(cmd.getState(),cmd.getTaskType());
                 break;
-            case TASK_CHANGE_TASK_ALL:
+            case TYPE_CHANGE_TASK_ALL:
                 mProcessorProxy.changeAllTasksState(cmd.getState(),cmd.getTaskType());
                 break;
-            case TASK_CHANGE_TASK_SOME:
+            case TYPE_CHANGE_TASK_SOME:
                 mProcessorProxy.changeTasksState(cmd.getState(),cmd.getTaskIds());
+                break;
+            case TYPE_UPDATE_TASK:
+                mProcessorProxy.updateTask(cmd.getTask());
+                break;
+            case TYPE_UPDATE_TASK_WTIHOUT_SAVE:
+                Debugger.error(TAG,"speed = " + cmd.getTask().getSpeed());
+                mProcessorProxy.updateTaskWithoutSave(cmd.getTask());
                 break;
         }
         mCallback.onFinished(cmd.getTaskType(),cmd.getProceeType(),null);
@@ -123,7 +126,6 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
         try {
             ITaskHandler taskHandler = handlerClzz.newInstance();
             taskHandler.setThreadPool(getTaskThreadPool(taskType));
-            taskHandler.setHandlerListenner(this);
             taskHandler.setHeaders(mHeaders);
             taskHandler.setParams(mParams);
             return taskHandler;
@@ -155,66 +157,5 @@ public class TaskManager implements ITaskManager , ITaskHandlerListenner{
         return mTasks;
     }
 
-    @Override
-    public void onStart(ITask params) {
-        //Debugger.error(TAG,"start = " + params);
-        synchronized (mProcessorProxy) {
-            mProcessorProxy.updateTask(params);
-            mCallback.onFinished(params.getType(), ProcessType.TYPE_CHANGE_TASK, null);
-        }
-    }
 
-    @Override
-    public void onStop(ITask params) {
-        //Debugger.error(TAG,"stop = " + params);
-        synchronized (mProcessorProxy) {
-            mProcessorProxy.updateTask(params);
-            mCallback.onFinished(params.getType(), ProcessType.TYPE_CHANGE_TASK, null);
-        }
-    }
-
-    @Override
-    public void onError(int code, ITask params) {
-        //Debugger.error(TAG,"error = " + params);
-        synchronized (mProcessorProxy) {
-            mProcessorProxy.updateTask(params);
-            mCallback.onFinished(params.getType(), ProcessType.TYPE_CHANGE_TASK, null);
-        }
-    }
-
-    @Override
-    public void onSpeedChanged(long speed, ITask params) {
-        synchronized (mProcessorProxy) {
-            mProcessorProxy.updateTaskWithoutSave(params);
-            mCallback.onFinished(params.getType(), ProcessType.TYPE_CHANGE_TASK, null);
-        }
-    }
-
-    @Override
-    public void onPiceSuccessful(ITask params) {
-        //Debugger.error(TAG,"picesuccessful = " + params);
-        synchronized (mProcessorProxy) {
-            mProcessorProxy.updateTask(params);
-            mCallback.onFinished(params.getType(), ProcessType.TYPE_CHANGE_TASK, null);
-        }
-    }
-
-    @Override
-    public void onFinished(ITask task) {
-        //Debugger.error(TAG,"finished = " + task);
-        //完成的任务释放handler,减少占用的内存
-        for(ITaskHolder holder : mTasks) {
-            if(holder.getTask().getTaskId() == task.getTaskId()) {
-                ITaskHandlerHolder handlerHolder = (ITaskHandlerHolder) holder;
-                if(handlerHolder.getTaskHandler() != null) {
-                    handlerHolder.setTaskHandler(null);
-                    break;
-                }
-            }
-        }
-        synchronized (mProcessorProxy) {
-            mProcessorProxy.updateTask(task);
-        }
-        mCallback.onFinished(task.getType(),ProcessType.TYPE_CHANGE_TASK,null);
-    }
 }

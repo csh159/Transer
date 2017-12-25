@@ -23,7 +23,6 @@ import com.scott.transer.task.DefaultHttpUploadHandler;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -91,6 +90,6 @@ public class TraserService extends Service implements ITaskProcessCallback{
     @Override
     public void onFinished(TaskType taskType, ProcessType type,List<ITask> tasks) {
         TaskEventBus.sInstance.mDispatcher.dispatchTasks(taskType,type,tasks);
-        TaskEventBus.sInstance.mDispatcher.dispatchTasks(taskType,ProcessType.TASK_DEFAULT,tasks);
+        TaskEventBus.sInstance.mDispatcher.dispatchTasks(taskType,ProcessType.TYPE_DEFAULT,tasks);
     }
 }

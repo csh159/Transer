@@ -77,6 +77,7 @@ public class TaskEventAnnotionProcessor extends AbstractProcessor {
                 TaskSubcriberParams params = new TaskSubcriberParams();
                 params.processType = subscribe.processType();
                 params.taskType = subscribe.taskType();
+                params.threadMode = subscribe.threadMode();
                 params.hasExtas = execEle.getParameters() != null && !execEle.getParameters().isEmpty();
 
                 method.put(methodName, params);
@@ -148,7 +149,7 @@ public class TaskEventAnnotionProcessor extends AbstractProcessor {
             for(TaskType type : TaskType.values()) {
                 method = MethodSpec.methodBuilder("On" + type.name())
                         .addParameter(ProcessType.class, "processType")
-                        .addParameter(List.class, "tasks")
+                        .addParameter(List.class, "tasks",Modifier.FINAL)
                         .addModifiers(Modifier.PRIVATE)
                         .addCode(createTypeSwitch(processMethods,type,clazzName));
                 builder.addMethod(method.build());
@@ -182,6 +183,7 @@ public class TaskEventAnnotionProcessor extends AbstractProcessor {
 
     private String createTypeSwitch(Map<ProcessType,List<Map<String,TaskSubcriberParams>>> processMethods,TaskType type,String clazzName) {
         StringBuilder sb = new StringBuilder();
+        sb.append("com.scott.transer.event.ITaskPoster taskPoster = null;\n");
         sb.append("switch(processType) {\n");
         for(ProcessType processType : processMethods.keySet()) {
             sb.append("case " + processType + ":\n");
@@ -190,7 +192,11 @@ public class TaskEventAnnotionProcessor extends AbstractProcessor {
                 for(String methodName : param.keySet()) {
                     TaskSubcriberParams methodParam = param.get(methodName);
                     if(methodParam.taskType == type) {
-                        sb.append("((" + clazzName + ")mScriber)." + methodName + "(" + (methodParam.hasExtas ? "tasks" : "") + ");\n");
+                        sb.append("taskPoster = com.scott.transer.event.TaskEventBus.getDefault().getTaskPoster(com.scott.annotionprocessor.ThreadMode." + methodParam.threadMode + ");\n");
+                        sb.append("ITaskEventDispatcher dispatcher = new ITaskEventDispatcher() {\n public void dispatchTasks(TaskType taskType, ProcessType type,final List taskList) {\n" +
+                                "((" + clazzName + ")mScriber)." + methodName + "(" + (methodParam.hasExtas ? "tasks" : "") + ");\n}};");
+                        sb.append("\ntaskPoster.enqueue(dispatcher,TaskType." + type + ",processType,tasks);");
+                        //sb.append("((" + clazzName + ")mScriber)." + methodName + "(" + (methodParam.hasExtas ? "tasks" : "") + ");\n");
                     }
                 }
             }

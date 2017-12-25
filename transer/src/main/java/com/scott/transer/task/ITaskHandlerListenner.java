@@ -11,15 +11,15 @@ import com.scott.annotionprocessor.ITask;
 
 public interface ITaskHandlerListenner {
 
-    void onStart(ITask params);
+    void onStart(ITask task);
 
-    void onStop(ITask params);
+    void onStop(ITask task);
 
-    void onError(int code,ITask params);
+    void onError(int code,ITask task);
 
-    void onSpeedChanged(long speed,ITask params);
+    void onSpeedChanged(long speed,ITask task);
 
-    void onPiceSuccessful(ITask params);
+    void onPiceSuccessful(ITask task);
 
     void onFinished(ITask task);
 

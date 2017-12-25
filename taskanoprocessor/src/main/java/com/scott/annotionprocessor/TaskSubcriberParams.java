@@ -19,6 +19,8 @@ public class TaskSubcriberParams {
 
     public ITaskEventDispatcher dispatcher;
 
+    public ThreadMode threadMode;
+
     @Override
     public String toString() {
         return "TaskSubcriberParams{" +

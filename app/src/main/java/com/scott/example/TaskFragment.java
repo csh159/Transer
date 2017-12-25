@@ -3,6 +3,7 @@ package com.scott.example;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.TaskSubscriber;
 import com.scott.annotionprocessor.TaskType;
+import com.scott.annotionprocessor.ThreadMode;
 import com.scott.example.adapter.TaskListAdapter;
 import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.processor.ITaskCmd;
@@ -81,7 +83,7 @@ public class TaskFragment extends Fragment {
         onTasksChange(tasks);
     }
 
-    @TaskSubscriber(taskType = TaskType.TYPE_UPLOAD)
+    @TaskSubscriber(taskType = TaskType.TYPE_UPLOAD,threadMode = ThreadMode.MODE_MAIN)
     public void onUploadTaskChange(final List<ITask> tasks) {
         if(mTaskType != TaskType.TYPE_UPLOAD) return;
         onTasksChange(tasks);
@@ -91,7 +93,7 @@ public class TaskFragment extends Fragment {
         if (tasks == null) {
             return;
         }
-
+        Log.e(TAG,"thread ==== " + Thread.currentThread().getName());
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {

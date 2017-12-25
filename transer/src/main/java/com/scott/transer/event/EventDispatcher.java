@@ -7,12 +7,15 @@ import com.scott.annotionprocessor.ITaskEventDispatcher;
 import com.scott.annotionprocessor.TaskEventAnnotionProcessor;
 import com.scott.annotionprocessor.TaskSubcriberParams;
 import com.scott.annotionprocessor.TaskSubscriber;
+import com.scott.annotionprocessor.ThreadMode;
 import com.scott.transer.processor.ITaskCmd;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,6 +85,7 @@ class EventDispatcher implements ICmdEventDispatcher,ITaskEventDispatcher {
                     mScriber.setAccessible(true);
                     mScriber.set(param.dispatcher,scriber);
                 }
+
                 param.dispatcher.dispatchTasks(taskType,type,taskList);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
