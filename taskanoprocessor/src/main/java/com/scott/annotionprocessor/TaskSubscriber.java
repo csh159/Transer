@@ -16,6 +16,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 public @interface TaskSubscriber {
     ProcessType[] processType() default ProcessType.TYPE_DEFAULT;
-    TaskType taskType() default TaskType.TYPE_UPLOAD;
+    TaskType taskType() default TaskType.TYPE_HTTP_UPLOAD;
     ThreadMode threadMode() default ThreadMode.MODE_POSTING;
 }

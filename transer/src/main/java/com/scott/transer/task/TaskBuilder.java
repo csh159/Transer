@@ -2,10 +2,6 @@ package com.scott.transer.task;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
-import com.scott.transer.task.ITaskBuilder;
-import com.scott.transer.task.Task;
-
-import java.util.List;
 
 /**
  * <P>Author: shijiale</P>
@@ -43,7 +39,7 @@ public class TaskBuilder implements ITaskBuilder {
 
     private String name;
 
-    private TaskType taskType = TaskType.TYPE_UPLOAD;
+    private TaskType taskType = TaskType.TYPE_HTTP_UPLOAD;
 
     private ITask task;
 

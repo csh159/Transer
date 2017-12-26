@@ -15,13 +15,13 @@ public final class TaskTypeConverter implements PropertyConverter<TaskType,Integ
 
     @Override
     public TaskType convertToEntityProperty(Integer databaseValue) {
-        TaskType taskType = TaskType.TYPE_UPLOAD;
+        TaskType taskType = TaskType.TYPE_HTTP_UPLOAD;
         switch (databaseValue) {
             case 0:
-                taskType = TaskType.TYPE_UPLOAD;
+                taskType = TaskType.TYPE_HTTP_UPLOAD;
                 break;
             case 1:
-                taskType = TaskType.TYPE_DOWNLOAD;
+                taskType = TaskType.TYPE_HTTP_DOWNLOAD;
                 break;
         }
         return taskType;
@@ -31,10 +31,10 @@ public final class TaskTypeConverter implements PropertyConverter<TaskType,Integ
     public Integer convertToDatabaseValue(TaskType entityProperty) {
         int value = 0;
         switch (entityProperty) {
-            case TYPE_DOWNLOAD:
+            case TYPE_HTTP_DOWNLOAD:
                 value = 1;
                 break;
-            case TYPE_UPLOAD:
+            case TYPE_HTTP_UPLOAD:
                 value = 0;
                 break;
         }

@@ -8,6 +8,6 @@ package com.scott.annotionprocessor;
  */
 
 public enum TaskType {
-    TYPE_UPLOAD,
-    TYPE_DOWNLOAD
+    TYPE_HTTP_UPLOAD,
+    TYPE_HTTP_DOWNLOAD
 }

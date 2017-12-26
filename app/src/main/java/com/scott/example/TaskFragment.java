@@ -17,10 +17,7 @@ import com.scott.annotionprocessor.ThreadMode;
 import com.scott.example.adapter.TaskListAdapter;
 import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.processor.ITaskCmd;
-import com.scott.transer.processor.TaskCmd;
 import com.scott.transer.processor.TaskCmdBuilder;
-import com.scott.transer.task.Task;
-import com.scott.transer.utils.Debugger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,17 +72,17 @@ public class TaskFragment extends Fragment {
         TaskEventBus.getDefault().unregesit(this);
     }
 
-    @TaskSubscriber(taskType = TaskType.TYPE_DOWNLOAD)
+    @TaskSubscriber(taskType = TaskType.TYPE_HTTP_DOWNLOAD)
     public void onDownloadTasksChange(final List<ITask> tasks) {
 
-        if(mTaskType != TaskType.TYPE_DOWNLOAD) return;
+        if(mTaskType != TaskType.TYPE_HTTP_DOWNLOAD) return;
         //Debugger.error(TAG,tasks.toString());
         onTasksChange(tasks);
     }
 
-    @TaskSubscriber(taskType = TaskType.TYPE_UPLOAD,threadMode = ThreadMode.MODE_MAIN)
+    @TaskSubscriber(taskType = TaskType.TYPE_HTTP_UPLOAD,threadMode = ThreadMode.MODE_MAIN)
     public void onUploadTaskChange(final List<ITask> tasks) {
-        if(mTaskType != TaskType.TYPE_UPLOAD) return;
+        if(mTaskType != TaskType.TYPE_HTTP_UPLOAD) return;
         onTasksChange(tasks);
     }
 

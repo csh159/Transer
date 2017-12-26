@@ -72,16 +72,16 @@ public class TraserService extends Service implements ITaskProcessCallback{
         mTaskManagerProxy.setProcessCallback(this);
         mTaskManagerProxy.setTaskProcessor(new TaskProcessorProxy(new TaskProcessor(),new TaskDbProcessor()));
         mTaskManagerProxy.setTaskManager(new TaskManager());
-        mTaskManagerProxy.setTaskHandler(TaskType.TYPE_DOWNLOAD, DefaultHttpDownloadHandler.class);
-        mTaskManagerProxy.setTaskHandler(TaskType.TYPE_UPLOAD, DefaultHttpUploadHandler.class);
+        mTaskManagerProxy.setTaskHandler(TaskType.TYPE_HTTP_DOWNLOAD, DefaultHttpDownloadHandler.class);
+        mTaskManagerProxy.setTaskHandler(TaskType.TYPE_HTTP_UPLOAD, DefaultHttpUploadHandler.class);
 
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
                 6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
-        mTaskManagerProxy.setThreadPool(TaskType.TYPE_UPLOAD, threadPool);
+        mTaskManagerProxy.setThreadPool(TaskType.TYPE_HTTP_UPLOAD, threadPool);
 
         threadPool = new ThreadPoolExecutor(3,3,
                 6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
-        mTaskManagerProxy.setThreadPool(TaskType.TYPE_DOWNLOAD,threadPool);
+        mTaskManagerProxy.setThreadPool(TaskType.TYPE_HTTP_DOWNLOAD,threadPool);
 
         mTaskManagerProxy.setHeaders(new HashMap<String, String>());
         mTaskManagerProxy.setParams(new HashMap<String, String>());

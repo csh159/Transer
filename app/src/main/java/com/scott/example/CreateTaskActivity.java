@@ -33,7 +33,7 @@ public class CreateTaskActivity extends AppCompatActivity {
     @BindView(R.id.rg_type)
     RadioGroup radioGroup;
 
-    private TaskType task_type = TaskType.TYPE_UPLOAD;
+    private TaskType task_type = TaskType.TYPE_HTTP_UPLOAD;
 
     final String NAME = "test.zip";
     final String DOWNLOAD_PATH = Environment.getExternalStorageDirectory().toString() + File.separator + NAME;
@@ -48,11 +48,11 @@ public class CreateTaskActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         switch (task_type) {
-            case TYPE_DOWNLOAD:
+            case TYPE_HTTP_DOWNLOAD:
                 editPath.setText(DOWNLOAD_PATH);
                 editUrl.setText(DOWNLOAD_URL);
                 break;
-            case TYPE_UPLOAD:
+            case TYPE_HTTP_UPLOAD:
                 editPath.setText(UPLOAD_PATH);
                 editUrl.setText(UPLOAD_URL);
                 break;
@@ -82,17 +82,17 @@ public class CreateTaskActivity extends AppCompatActivity {
         String dest = null;
 
         if(radioGroup.getCheckedRadioButtonId() == R.id.rb_upload) {
-            task_type = TaskType.TYPE_UPLOAD;
+            task_type = TaskType.TYPE_HTTP_UPLOAD;
         } else {
-            task_type = TaskType.TYPE_DOWNLOAD;
+            task_type = TaskType.TYPE_HTTP_DOWNLOAD;
         }
 
         switch (task_type) {
-            case TYPE_UPLOAD:
+            case TYPE_HTTP_UPLOAD:
                 source = editPath.getText().toString();
                 dest = editUrl.getText().toString();
                 break;
-            case TYPE_DOWNLOAD:
+            case TYPE_HTTP_DOWNLOAD:
                 dest = editPath.getText().toString();
                 source = editUrl.getText().toString();
                 break;
