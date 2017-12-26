@@ -9,3 +9,5 @@
 - WebSocket 以及其他方式的文件传输支持
 - 优化性能
 
+服务端测试用例详见：
+- https://github.com/shilec/WebDemo
