@@ -121,6 +121,7 @@ public void onTasksChanged(List<ITask> tasks) {
         mTaskManagerProxy.setTaskProcessor(new TaskProcessorProxy(new TaskProcessor(),new TaskDbProcessor())); 
         
         mTaskManagerProxy.setTaskManager(new TaskManager()); 
+        //可以继承BaseTaskHandler 实现新的传输处理器
         mTaskManagerProxy.setTaskHandler(TaskType.TYPE_HTTP_DOWNLOAD, DefaultHttpDownloadHandler.class); //设置下载器
         mTaskManagerProxy.setTaskHandler(TaskType.TYPE_HTTP_UPLOAD, DefaultHttpUploadHandler.class); //设置上传器
 
