@@ -4,6 +4,9 @@ import com.scott.annotionprocessor.ITask;
 import com.scott.transer.http.OkHttpProxy;
 import com.scott.transer.utils.Debugger;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +52,21 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
         if(mResponse == null) {
             return false;
         }
-        return true;
+
+        try {
+            JSONObject job = new JSONObject(mResponse);
+            String range = job.optString("range");
+            String end = range.split("-")[0];
+            String all = range.split("-")[1];
+
+            if(Long.parseLong(end) - 1 >= Long.parseLong(all)) {
+                return true;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Debugger.error(TAG,e.getMessage());
+        }
+        return false;
     }
 
     @Override

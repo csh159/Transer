@@ -87,6 +87,9 @@ public class TaskFragment extends Fragment {
     }
 
     private void onTasksChange(final List<ITask> tasks) {
+
+        //为了保持任务管理的一致。不能将ITask 转为 Task
+        //只是用ITask 去获取任务信息，显示到UI
         if (tasks == null) {
             return;
         }
