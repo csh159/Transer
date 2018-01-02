@@ -92,7 +92,7 @@ ITask task = new TaskBuilder()
         ITaskCmd cmd = new TaskCmdBuilder()
                 .setTaskType(task_type) //任务类型
                 .setState(TaskState.STATE_START)
-                .setProcessType(ProcessType.TYPE_CHANGE_TASK) //操作类型(添加任务)
+                .setProcessType(ProcessType.TYPE_CHANGE_TASK) //操作类型(修改任务状态)
                 .setTask(task) //任务信息
                 .build();
 
@@ -102,8 +102,8 @@ ITask task = new TaskBuilder()
 ```` java
         ITaskCmd cmd = new TaskCmdBuilder()
                 .setTaskType(task_type) //任务类型
-                .setState(TaskState.STATE_START)
-                .setProcessType(ProcessType.TYPE_CHANGE_TASK) //操作类型(添加任务)
+                .setState(TaskState.STATE_STOP)
+                .setProcessType(ProcessType.TYPE_CHANGE_TASK) //操作类型(修改任务状态)
                 .setTask(task) //任务信息
                 .build();
 
