@@ -9,6 +9,9 @@ import android.widget.TextView;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.example.utils.Contacts;
+import com.scott.example.utils.TaskUtils;
+import com.scott.transer.task.BaseTaskHandler;
+import com.scott.transer.task.HandlerParamNames;
 import com.scott.transer.task.TaskBuilder;
 import com.scott.transer.task.DefaultHttpUploadHandler;
 import com.scott.transer.task.ITaskHandler;
@@ -19,6 +22,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -53,6 +58,9 @@ public class SimpleUploadActivity extends AppCompatActivity {
     @BindView(R.id.tv_equals)
     TextView tvEquals;
 
+    @BindView(R.id.tv_speed)
+    TextView tvSpeed;
+
     private ITaskHandler mHandler;
 
     final String URL = "http://" + Contacts.TEST_HOST + "/WebDemo/UploadManager";
@@ -67,7 +75,11 @@ public class SimpleUploadActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         mHandler = new DefaultHttpUploadHandler();
-        ITask task = new TaskBuilder()
+        Map<String,String> params = new HashMap<>();
+        params.put("path","test.zip");
+        params.put(HandlerParamNames.PARAM_SPEED_LIMITED, BaseTaskHandler.SPEED_LISMT.SPEED_100KB + "");
+
+        final ITask task = new TaskBuilder()
                 .setName("test.zip")
                 .setTaskId("1233444")
                 .setSessionId("123123123131")
@@ -75,6 +87,7 @@ public class SimpleUploadActivity extends AppCompatActivity {
                 .setDestSource(URL)
                 .build();
         mHandler.setTask(task);
+        mHandler.setParams(params);
         mHandler.setHandlerListenner(new SimpleTaskHandlerListenner() {
             @Override
             public void onPiceSuccessful(final ITask params) {
@@ -120,6 +133,7 @@ public class SimpleUploadActivity extends AppCompatActivity {
                         double progress = (double)params.getCompleteLength() / (double)params.getLength();
                         progress = progress * 100f;
                         progressLength.setProgress((int) progress);
+                        tvSpeed.setText(TaskUtils.getFileSize(task.getSpeed()));
                     }
                 });
                 Debugger.error("OnlyDownloadActivity","speed = " + getFileSize(speed) + "/s");

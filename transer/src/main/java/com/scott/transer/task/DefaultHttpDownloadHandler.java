@@ -1,7 +1,5 @@
 package com.scott.transer.task;
 
-import android.text.TextUtils;
-
 import com.scott.annotionprocessor.ITask;
 import com.scott.transer.http.OkHttpProxy;
 import com.scott.transer.utils.Debugger;
@@ -10,17 +8,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okio.Buffer;
-import okio.Source;
 
 /**
  * <P>Author: shijiale</P>
@@ -30,11 +23,9 @@ import okio.Source;
 
 public class DefaultHttpDownloadHandler extends BaseTaskHandler {
 
-    public static final String PARAM_COVER_FILE = "cover-file";
 
     private RandomAccessFile mFile;
     private InputStream mInputStream;
-    private final int MAX_PICE_SIZE = 1 * 1024 * 1024;
     private int mPiceSize = 0;
     private long mFileSize = 0;
     final String TAG = DefaultHttpDownloadHandler.class.getSimpleName();
@@ -68,7 +59,7 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
         if(mInputStream == null) {
             return null;
         }
-        byte[] buf = new byte[MAX_PICE_SIZE];
+        byte[] buf = new byte[getPiceBuffSize()];
         mPiceSize = mInputStream.read(buf);
         return buf;
     }
@@ -87,7 +78,7 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
             if(!url.contains("?")) {
                 url += "?" + k + "=" + getParams().get(k);
             } else {
-                url = "&" + k + "=" + getParams().get(k);
+                url += "&" + k + "=" + getParams().get(k);
             }
         }
 
@@ -97,8 +88,8 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
         if(file.length() == mFileSize && mFileSize != 0) {
             //if local exists and is completed,params contains cover-file -> true
             //delete file, else return finished.
-            if(getParams().containsKey(PARAM_COVER_FILE)) {
-                boolean coverFile = Boolean.parseBoolean(getParams().get(PARAM_COVER_FILE));
+            if(getParams().containsKey(HandlerParamNames.PARAM_COVER_FILE)) {
+                boolean coverFile = Boolean.parseBoolean(getParams().get(HandlerParamNames.PARAM_COVER_FILE));
                 if(coverFile) {
                     file.delete();
                 } else {

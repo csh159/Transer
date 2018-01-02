@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -33,7 +32,6 @@ import okio.BufferedSink;
 public class DefaultHttpUploadHandler extends BaseTaskHandler {
 
     private RandomAccessFile mFile;
-    private final int MAX_PICE_SIZE = 1 * 1024 * 1024; //每片大小，理论上分片越大，速度越快
     private String mResponse;     //返回数据
     private int mPiceRealSize = 0; //每一片的实际大小
     private PiceRequestBody mRequestBody; // 写入一片
@@ -71,8 +69,8 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
 
     @Override
     protected byte[] readPice(Task task) throws IOException{
-        byte[] datas = new byte[MAX_PICE_SIZE];
-        mPiceRealSize = mFile.read(datas,0, MAX_PICE_SIZE);
+        byte[] datas = new byte[getPiceBuffSize()];
+        mPiceRealSize = mFile.read(datas,0, getPiceBuffSize());
         return datas;
     }
 
@@ -151,7 +149,7 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
     protected class PiceRequestBody extends RequestBody {
 
         private ByteArrayInputStream mSource; //当前需要传输的一片
-        private int mCurrentCompleteLength; //当前已经完成的长度，写入多少增加多少
+        private volatile int mCurrentCompleteLength; //当前已经完成的长度，写入多少增加多少
 
         PiceRequestBody(byte[] datas) {
             mSource = new ByteArrayInputStream(datas,0,getPiceRealSize());

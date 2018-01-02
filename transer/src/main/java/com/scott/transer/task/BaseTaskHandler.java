@@ -6,6 +6,8 @@ import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.utils.Debugger;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -33,6 +35,40 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     private long mLastCompleteLength = 0;
     private StateRunnable mStateRunnable;
     private Thread mStateThread;
+    protected final int DEFAULT_PICE_SIZE = 1 * 1024 * 1024;
+
+    private long mLastCaluteTime = 0;
+    private long mLastCalculateLength = 0;
+
+    //每片大小
+    protected int getPiceBuffSize() {
+        if(mParams.containsKey(HandlerParamNames.PARAM_PICE_SIZE)) {
+            String sSize = mParams.get(HandlerParamNames.PARAM_PICE_SIZE);
+            try {
+                int nSize = Integer.parseInt(sSize);
+                if(nSize <= 0) {
+                    return DEFAULT_PICE_SIZE;
+                } else {
+                    return nSize;
+                }
+            } catch (NumberFormatException e) {
+                return DEFAULT_PICE_SIZE;
+            }
+        }
+        return DEFAULT_PICE_SIZE;
+    }
+
+    public interface SPEED_LISMT {
+        long SPEED_100KB = 100 * 1024;
+        long SPEED_200KB = 200 * 1024;
+        long SPEED_300KB = 300 * 1024;
+        long SPEED_500KB = 500 * 1024;
+        long SPEED_1MB = 1 * 1024 * 1024;
+        long SPEED_2MB = 2 * 1024 * 1024;
+        long SPEED_5MB = 5 * 1024 * 1024;
+        long SPEED_10MB = 10 * 1024 * 1024;
+        long SPEED_UNLIMITED = -1;
+    }
 
     public BaseTaskHandler() {
         mStateRunnable = new StateRunnable();
@@ -51,6 +87,18 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
     @Override
     public Map<String, String> getParams() {
+
+        //移除内部使用的param
+//        Map<String,String> params = new HashMap<>();
+//        params.putAll(mParams);
+//        Class cls = HandlerParamNames.class;
+//        Field[] fields = cls.getDeclaredFields();
+//
+//        for(Field f : fields) {
+//            String k = f.getName();
+//            params.remove(k);
+//        }
+//        return params;
         return mParams;
     }
 
@@ -109,7 +157,6 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     private void handle(ITask task) throws Exception {
 
         mLastCompleteLength = task.getCompleteLength();
-
         //开始任务前准备任务数据，初始化源数据流
         prepare(task);
 
@@ -123,7 +170,35 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         Debugger.error(TAG,"start ============= length = " + task.getLength() + "" +
                 ",completeLength = " + task.getCompleteLength() + ",startOffset = " + task.getStartOffset() + ",endOffset = " + task.getEndOffset());
 
+        _handle(task);
+
+        if(!isSuccessful()) { //判断整个任务是否成功
+            mTask.setState(TaskState.STATE_ERROR);
+            mListenner.onError(TaskErrorCode.ERROR_FINISH,mTask);
+        } else {
+            mTask.setCompleteLength(mTask.getLength());
+            mTask.setCompleteTime(System.currentTimeMillis());
+            mTask.setState(TaskState.STATE_FINISH);
+            mListenner.onFinished(mTask);
+        }
+
+        release(); //释放资源
+    }
+
+    protected long getLimitSize() {
+        long limitSize = SPEED_LISMT.SPEED_UNLIMITED;
+        try {
+            limitSize = Long.parseLong(mParams.get(HandlerParamNames.PARAM_SPEED_LIMITED));
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return limitSize;
+    }
+
+    private void _handle(ITask task) throws Exception{
         while (!isExit) {
+
+            mLastCaluteTime = System.currentTimeMillis();
 
             byte[] datas = readPice((Task) task); // 从源中读取一片数据
             int piceSize = getPiceRealSize(); //获取当前读取一片的实际大小
@@ -137,6 +212,18 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             //设置读取的结束偏移量
             ((Task) task).setEndOffset(task.getStartOffset() + piceSize);
             writePice(datas,(Task) task); //写入实际读入的大小
+            long endCalculateTime = System.currentTimeMillis();
+
+            mLastCalculateLength += getPiceRealSize();
+            //如果当前传输速度大于限制的速度，则等待一段时间
+            if(endCalculateTime - mLastCaluteTime < 1000 && mLastCalculateLength >= getLimitSize()
+                    && getLimitSize() != SPEED_LISMT.SPEED_UNLIMITED) {
+                long waitTime = 1000 - (endCalculateTime - mLastCaluteTime);
+                Thread.sleep(waitTime);
+                mLastCalculateLength = 0;
+                Debugger.error(TAG,"wait time = " + waitTime + ",size = " + getPiceBuffSize() + ",realSize = " + getPiceRealSize() );
+            }
+
             mTask.setCompleteLength(mTask.getEndOffset());
             mTask.setStartOffset(mTask.getEndOffset());
             Debugger.info(TAG,"length = " + task.getLength() + "" +
@@ -152,17 +239,6 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             }
         }
 
-        if(!isSuccessful()) { //判断整个任务是否成功
-            mTask.setState(TaskState.STATE_ERROR);
-            mListenner.onError(TaskErrorCode.ERROR_FINISH,mTask);
-        } else {
-            mTask.setCompleteLength(mTask.getLength());
-            mTask.setCompleteTime(System.currentTimeMillis());
-            mTask.setState(TaskState.STATE_FINISH);
-            mListenner.onFinished(mTask);
-        }
-
-        release(); //释放资源
     }
 
     @Override

@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.scott.annotionprocessor.ITask;
 import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
+import com.scott.transer.task.BaseTaskHandler;
+import com.scott.transer.task.HandlerParamNames;
 import com.scott.transer.task.TaskBuilder;
 import com.scott.transer.task.DefaultHttpDownloadHandler;
 import com.scott.transer.task.ITaskHandler;
@@ -91,6 +93,7 @@ public class SimpleDownloadActivity extends AppCompatActivity {
         //设置请求参数
         Map<String,String> params = new HashMap<>();
         params.put("path","test.zip");
+        params.put(HandlerParamNames.PARAM_SPEED_LIMITED, BaseTaskHandler.SPEED_LISMT.SPEED_UNLIMITED + "");
         mHandler.setParams(params);
         mHandler.setHandlerListenner(new DownloadListener());
 
@@ -115,7 +118,7 @@ public class SimpleDownloadActivity extends AppCompatActivity {
         @Override
         public void onPiceSuccessful(final ITask params) {
 
-            Debugger.error(TAG,"finished === " + params);
+            //Debugger.error(TAG,"finished === " + params);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
