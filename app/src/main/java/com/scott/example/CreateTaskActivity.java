@@ -37,7 +37,8 @@ public class CreateTaskActivity extends AppCompatActivity {
 
     final String NAME = "test.zip";
     final String DOWNLOAD_PATH = Environment.getExternalStorageDirectory().toString() + File.separator + NAME;
-    final String DOWNLOAD_URL = "http://" + Contacts.TEST_HOST + "/WebDemo/DownloadManager?path=" + NAME;
+    final String DOWNLOAD_URL = "http://" + Contacts.TEST_HOST + "/WebDemo/DownloadManager";
+    ;
     final String UPLOAD_PATH = DOWNLOAD_PATH;
     final String UPLOAD_URL = "http://" + Contacts.TEST_HOST + "/WebDemo/UploadManager";
 

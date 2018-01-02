@@ -96,7 +96,7 @@ public class TaskEventAnnotionProcessor extends AbstractProcessor {
             String simpleName = clazzName.substring(clazzName.lastIndexOf(".") + 1,clazzName.length());
             String packageName = clazzName.substring(0,clazzName.lastIndexOf("."));
             TypeSpec.Builder builder = TypeSpec.classBuilder(simpleName + CLAZZ_EXT)
-                    .addField(TypeName.OBJECT,SCRIBER_NAME)
+                    .addField(TypeName.OBJECT,SCRIBER_NAME,Modifier.PUBLIC)
                     .addModifiers(Modifier.PUBLIC)
                     .addSuperinterface(ITaskEventDispatcher.class);
 

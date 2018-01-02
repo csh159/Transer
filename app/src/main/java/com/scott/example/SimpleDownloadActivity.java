@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.example.utils.Contacts;
+import com.scott.example.utils.TaskUtils;
 import com.scott.transer.task.TaskBuilder;
 import com.scott.transer.task.DefaultHttpDownloadHandler;
 import com.scott.transer.task.ITaskHandler;
@@ -23,13 +24,13 @@ import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.internal.Utils;
 
 public class SimpleDownloadActivity extends AppCompatActivity {
 
@@ -60,6 +61,9 @@ public class SimpleDownloadActivity extends AppCompatActivity {
     @BindView(R.id.tv_equals)
     TextView tvEquals;
 
+    @BindView(R.id.tv_speed)
+    TextView tvSpeed;
+
     private ITaskHandler mHandler;
 
     final String URL = "http://" + Contacts.TEST_HOST + "/WebDemo/DownloadManager";
@@ -76,64 +80,21 @@ public class SimpleDownloadActivity extends AppCompatActivity {
         tvMd5.setText(FILE_MD5);
 
         mHandler = new DefaultHttpDownloadHandler();
+        //创建一个任务
         ITask task = new TaskBuilder()
-                .setDataSource(URL)
-                .setDestSource(FILE_PATH)
+                .setName("test.zip") //设置任务名称
+                .setDataSource(URL)  //设置数据源
+                .setDestSource(FILE_PATH) //设置目标路径
                 .build();
-
         mHandler.setTask(task);
+
+        //设置请求参数
         Map<String,String> params = new HashMap<>();
         params.put("path","test.zip");
         mHandler.setParams(params);
-        mHandler.setHandlerListenner(new SimpleTaskHandlerListenner() {
-            @Override
-            public void onPiceSuccessful(final ITask params) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tvCompleteLength.setText(getFileSize(params.getCompleteLength()));
-                        tvAllLength.setText(getFileSize(params.getLength()));
+        mHandler.setHandlerListenner(new DownloadListener());
 
-                        double progress = (double)params.getCompleteLength() / (double)params.getLength();
-                        progress = progress * 100f;
-                        progressLength.setProgress((int) progress);
-                    }
-                });
-            }
-
-            @Override
-            public void onError(int code, ITask params) {
-                super.onError(code, params);
-                Debugger.error(TAG,"error === " + params);
-            }
-
-            @Override
-            public void onFinished(final ITask task) {
-                Debugger.error(TAG,"finished === " + task);
-                super.onFinished(task);
-                final String newMd5 = getFileMD5(new File(FILE_PATH));
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tvCompleteLength.setText(getFileSize(task.getCompleteLength()));
-                        tvAllLength.setText(getFileSize(task.getLength()));
-
-                        double progress = (double)task.getCompleteLength() / (double)task.getLength();
-                        progress = progress * 100f;
-                        progressLength.setProgress((int) progress);
-                        tvNewMd5.setText(newMd5);
-                        tvEquals.setText(TextUtils.equals(newMd5,FILE_MD5) + "");
-                    }
-                });
-            }
-
-            @Override
-            public void onSpeedChanged(long speed, ITask params) {
-                super.onSpeedChanged(speed, params);
-                //Debugger.error("OnlyDownloadActivity","speed = " + getFileSize(speed) + "/s");
-            }
-        });
-
+        //设置一个线程池去下载文件，如果不设置，则会在当前线程进行下载。
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
                 6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
         mHandler.setThreadPool(threadPool);
@@ -149,37 +110,62 @@ public class SimpleDownloadActivity extends AppCompatActivity {
         mHandler.start();
     }
 
-    private String getFileSize(long size) {
-        if(size < 1024) {
-            return size + "B";
-        } else if(size < 1024 * 1024) {
-            return size / 1024f + "KB";
-        } else if(size < 1024 * 1024 * 1024) {
-            return size / 1024f / 1024f + "MB";
-        }
-        return "";
-    }
+    private final class DownloadListener extends SimpleTaskHandlerListenner {
 
-    public static String getFileMD5(File file) {
-        if (!file.isFile()) {
-            return null;
+        @Override
+        public void onPiceSuccessful(final ITask params) {
+
+            Debugger.error(TAG,"finished === " + params);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tvCompleteLength.setText(TaskUtils.getFileSize(params.getCompleteLength()));
+                    tvAllLength.setText(TaskUtils.getFileSize(params.getLength()));
+
+                    double progress = (double)params.getCompleteLength() / (double)params.getLength();
+                    progress = progress * 100f;
+                    progressLength.setProgress((int) progress);
+                    tvName.setText(params.getName());
+                }
+            });
         }
-        MessageDigest digest = null;
-        FileInputStream in = null;
-        byte buffer[] = new byte[1024];
-        int len;
-        try {
-            digest = MessageDigest.getInstance("MD5");
-            in = new FileInputStream(file);
-            while ((len = in.read(buffer, 0, 1024)) != -1) {
-                digest.update(buffer, 0, len);
-            }
-            in.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+
+        @Override
+        public void onError(int code, ITask params) {
+            super.onError(code, params);
+            Debugger.error(TAG,"error === " + params);
         }
-        BigInteger bigInt = new BigInteger(1, digest.digest());
-        return bigInt.toString(16);
+
+        @Override
+        public void onFinished(final ITask task) {
+            Debugger.error(TAG,"finished === " + task);
+            super.onFinished(task);
+            final String newMd5 = TaskUtils.getFileMD5(new File(FILE_PATH));
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tvCompleteLength.setText(TaskUtils.getFileSize(task.getCompleteLength()));
+                    tvAllLength.setText(TaskUtils.getFileSize(task.getLength()));
+
+                    double progress = (double)task.getCompleteLength() / (double)task.getLength();
+                    progress = progress * 100f;
+                    progressLength.setProgress((int) progress);
+                    tvNewMd5.setText(newMd5);
+                    tvEquals.setText(TextUtils.equals(newMd5,FILE_MD5) + "");
+                }
+            });
+        }
+
+        @Override
+        public void onSpeedChanged(long speed, final ITask params) {
+            super.onSpeedChanged(speed, params);
+            Debugger.error("OnlyDownloadActivity","speed = " + TaskUtils.getFileSize(speed) + "/s");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tvSpeed.setText(TaskUtils.getFileSize(params.getSpeed()));
+                }
+            });
+        }
     }
 }

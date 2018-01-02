@@ -1,5 +1,7 @@
 package com.scott.transer.task;
 
+import android.text.TextUtils;
+
 import com.scott.annotionprocessor.ITask;
 import com.scott.transer.http.OkHttpProxy;
 import com.scott.transer.utils.Debugger;
@@ -27,6 +29,8 @@ import okio.Source;
  */
 
 public class DefaultHttpDownloadHandler extends BaseTaskHandler {
+
+    public static final String PARAM_COVER_FILE = "cover-file";
 
     private RandomAccessFile mFile;
     private InputStream mInputStream;
@@ -87,13 +91,25 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
             }
         }
 
-        mFile = new RandomAccessFile(getTask().getDestSource(),"rw");
+        File file = new File(getTask().getDestSource());
         mFileSize = getNetSize(url); //从服务端获取文件大小
 
-        //如果本地文件大小和服务端文件大小相同，则不进行重复下载
-        if(mFile.length() == mFileSize && mFileSize != 0) {
-            return;
+        if(file.length() == mFileSize && mFileSize != 0) {
+            //if local exists and is completed,params contains cover-file -> true
+            //delete file, else return finished.
+            if(getParams().containsKey(PARAM_COVER_FILE)) {
+                boolean coverFile = Boolean.parseBoolean(getParams().get(PARAM_COVER_FILE));
+                if(coverFile) {
+                    file.delete();
+                } else {
+                    return;
+                }
+            } else {
+                file.delete();
+            }
         }
+        mFile = new RandomAccessFile(file,"rw");
+
         //将文件指针移动到末尾
         if(task.getStartOffset() != 0) {
             mFile.seek(task.getStartOffset());
@@ -116,6 +132,8 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
         ResponseBody body = response.body();
         mInputStream = body.byteStream();
     }
+
+
 
     @Override
     protected int getPiceRealSize() {

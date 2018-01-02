@@ -72,7 +72,7 @@ public class TaskFragment extends Fragment {
         TaskEventBus.getDefault().unregesit(this);
     }
 
-    @TaskSubscriber(taskType = TaskType.TYPE_HTTP_DOWNLOAD)
+    @TaskSubscriber(taskType = TaskType.TYPE_HTTP_DOWNLOAD,threadMode = ThreadMode.MODE_MAIN)
     public void onDownloadTasksChange(final List<ITask> tasks) {
 
         if(mTaskType != TaskType.TYPE_HTTP_DOWNLOAD) return;
@@ -91,13 +91,8 @@ public class TaskFragment extends Fragment {
             return;
         }
         Log.e(TAG,"thread ==== " + Thread.currentThread().getName());
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mTasks.clear();
-                mTasks.addAll(tasks);
-                mTaskAdapter.notifyDataSetChanged();
-            }
-        });
+        mTasks.clear();
+        mTasks.addAll(tasks);
+        mTaskAdapter.notifyDataSetChanged();
     }
 }

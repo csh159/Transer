@@ -28,6 +28,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.scott.example.utils.TaskUtils.getFileSize;
+
 public class SimpleUploadActivity extends AppCompatActivity {
 
     @BindView(R.id.tv_name)
@@ -144,16 +146,5 @@ public class SimpleUploadActivity extends AppCompatActivity {
     @OnClick(R.id.btn_start)
     public void start() {
         mHandler.start();
-    }
-
-    private String getFileSize(long size) {
-        if(size < 1024) {
-            return size + "B";
-        } else if(size < 1024 * 1024) {
-            return size / 1024f + "KB";
-        } else if(size < 1024 * 1024 * 1024) {
-            return size / 1024f / 1024f + "MB";
-        }
-        return "";
     }
 }

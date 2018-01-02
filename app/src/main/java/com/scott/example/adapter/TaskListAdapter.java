@@ -1,6 +1,5 @@
 package com.scott.example.adapter;
 
-import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +11,10 @@ import android.widget.TextView;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.example.R;
-import com.scott.example.utils.SizeUtils;
+import com.scott.example.utils.TaskUtils;
 import com.scott.transer.event.TaskEventBus;
-import com.scott.transer.processor.ITaskCmd;
 import com.scott.transer.processor.ITaskCmdBuilder;
 import com.scott.transer.processor.TaskCmdBuilder;
-import com.scott.transer.task.Task;
 import com.scott.transer.task.TaskState;
 
 import java.util.List;
@@ -74,9 +71,9 @@ public class TaskListAdapter extends BaseAdapter {
 
         ITask task = mTasks.get(i);
         holder.tvName.setText(task.getName());
-        holder.tvCompleteLength.setText(SizeUtils.getFileSize(task.getCompleteLength()));
-        holder.tvLength.setText(SizeUtils.getFileSize(task.getLength()));
-        holder.tvSpeed.setText(SizeUtils.getFileSize(task.getSpeed()));
+        holder.tvCompleteLength.setText(TaskUtils.getFileSize(task.getCompleteLength()));
+        holder.tvLength.setText(TaskUtils.getFileSize(task.getLength()));
+        holder.tvSpeed.setText(TaskUtils.getFileSize(task.getSpeed()));
 
         double progress = (double)task.getCompleteLength() / (double)task.getLength();
         progress = progress * 100f;
@@ -84,7 +81,7 @@ public class TaskListAdapter extends BaseAdapter {
 
         if(task.getState() == TaskState.STATE_FINISH) {
             holder.progressLength.setProgress(100);
-            holder.tvCompleteLength.setText(SizeUtils.getFileSize(task.getCompleteLength()));
+            holder.tvCompleteLength.setText(TaskUtils.getFileSize(task.getCompleteLength()));
         }
         return view;
     }

@@ -1,6 +1,7 @@
 package com.scott.transer.event;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -39,6 +40,12 @@ public class TraserService extends Service implements ITaskProcessCallback{
 
     static final String ACTION_EXECUTE_CMD = "_CMD";
 
+    static Context mContext;
+
+    public static Context getContext() {
+        return mContext;
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -67,6 +74,7 @@ public class TraserService extends Service implements ITaskProcessCallback{
         super.onCreate();
         TaskEventBus.init(getApplicationContext());
         DaoHelper.init(getApplicationContext());
+        mContext = getApplicationContext();
 
         mTaskManagerProxy = new TaskManagerProxy();
         mTaskManagerProxy.setProcessCallback(this);
@@ -92,4 +100,6 @@ public class TraserService extends Service implements ITaskProcessCallback{
         TaskEventBus.sInstance.mDispatcher.dispatchTasks(taskType,type,tasks);
         TaskEventBus.sInstance.mDispatcher.dispatchTasks(taskType,ProcessType.TYPE_DEFAULT,tasks);
     }
+
+
 }

@@ -1,5 +1,7 @@
 package com.scott.transer.task;
 
+import android.os.Looper;
+
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.utils.Debugger;
@@ -25,7 +27,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     private ThreadPoolExecutor mTaskHandleThreadPool;
     private volatile Task mTask;
     private HandleRunnable mHandleRunnable;
-    private final long  MAX_DELAY_TIME = 300;
+    private final long  MAX_DELAY_TIME = 1000;
     private final String TAG = BaseTaskHandler.class.getSimpleName();
 
     private long mLastCompleteLength = 0;
@@ -103,9 +105,11 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
     protected  abstract long fileSize();
 
+
     private void handle(ITask task) throws Exception {
 
         mLastCompleteLength = task.getCompleteLength();
+
         //开始任务前准备任务数据，初始化源数据流
         prepare(task);
 
@@ -180,6 +184,8 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             }
 
             mStateThread = new Thread(mStateRunnable);
+            mStateThread.setName("speed_" + getTask().getName() + "_thread");
+            mStateThread.setDaemon(true);
             mStateThread.start();
             mTask.setState(TaskState.STATE_RUNNING);
         }

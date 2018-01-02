@@ -35,6 +35,15 @@
         android:layout_height="wrap_content" />
 
     <TextView
+        android:layout_centerHorizontal="true"
+        android:text="1.2MB"
+        android:gravity="center"
+        android:layout_below="@id/progress_length"
+        android:id="@+id/tv_speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
         android:text="30.5MB"
         android:gravity="center"
         android:layout_alignParentRight="true"
