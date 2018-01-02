@@ -7,6 +7,7 @@
 
 ## 简单的下载或上传:
 
+下载:
 ```` java 
    mHandler = new DefaultHttpDownloadHandler();
         //创建一个任务
@@ -21,7 +22,29 @@
         Map<String,String> params = new HashMap<>();
         params.put("path","test.zip");
         mHandler.setParams(params);
-        mHandler.setHandlerListenner(new DownloadListener());
+        mHandler.setHandlerListenner(new SimpleTaskHandlerListenner());
+
+        //设置一个线程池去下载文件，如果不设置，则会在当前线程进行下载。
+        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
+                6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
+        mHandler.setThreadPool(threadPool);
+````
+上传:
+```` java 
+   mHandler = new DefaultHttpUploadHandler();
+        //创建一个任务
+        ITask task = new TaskBuilder()
+                .setName("test.zip") //设置任务名称
+                .setDataSource(FILE_PATH)  //设置数据源
+                .setDestSource(URL) //设置目标路径
+                .build();
+        mHandler.setTask(task);
+
+        //设置请求参数
+        Map<String,String> params = new HashMap<>();
+        params.put("path","test.zip");
+        mHandler.setParams(params);
+        mHandler.setHandlerListenner(new SimpleTaskHandlerListenner());
 
         //设置一个线程池去下载文件，如果不设置，则会在当前线程进行下载。
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
