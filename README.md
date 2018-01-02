@@ -46,7 +46,7 @@
         mHandler.setParams(params);
         mHandler.setHandlerListenner(new SimpleTaskHandlerListenner());
 
-        //设置一个线程池去下载文件，如果不设置，则会在当前线程进行下载。
+        //设置一个线程池去上传文件，如果不设置，则会在当前线程进行上传。
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
                 6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
         mHandler.setThreadPool(threadPool);
