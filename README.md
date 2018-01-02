@@ -160,9 +160,17 @@ public void onTasksChanged(List<ITask> tasks) {
         mTaskManagerProxy.setThreadPool(TaskType.TYPE_HTTP_DOWNLOAD,threadPool); //下载线程池
 
         mTaskManagerProxy.setHeaders(new HashMap<String, String>()); //设置请求头
+        Map<String,String> params = new HashMap<>();
+        //设置限制速度
+        params.put(HandlerParamNames.PARAM_LIMITED_SPEED,BaseTaskHandler.LIMIT_SPEED.1MB + "");
+        //设置分片大小
+        params.put(HandlerParamNames.PARAM_PICE_SIZE,BaseTaskHandler.LIMIT_SPEED.1MB + "");
         mTaskManagerProxy.setParams(new HashMap<String, String>()); //设置url参数
 
 ````
+
+更新日志:
+- 2017/1/2 添加下载限速，设置分片大小
 
 接下来将会增加的功能：
 - 其他方式的文件传输支持
