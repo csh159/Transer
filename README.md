@@ -5,6 +5,9 @@
 - 支持 类EventBus的task状态变更通知，支持三种线程的订阅模式
 - 支持 任务分组，分用户
 
+## 设计
+<img src="/imgs/design.png" alt="架构" width="80%" height="500"/>
+
 ## 简单的下载或上传:
 
 下载:
