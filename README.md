@@ -165,7 +165,7 @@ public void onTasksChanged(List<ITask> tasks) {
         params.put(HandlerParamNames.PARAM_LIMITED_SPEED,BaseTaskHandler.LIMIT_SPEED.1MB + "");
         //设置分片大小
         params.put(HandlerParamNames.PARAM_PICE_SIZE,BaseTaskHandler.LIMIT_SPEED.1MB + "");
-        mTaskManagerProxy.setParams(new HashMap<String, String>()); //设置url参数
+        mTaskManagerProxy.setParams(params); //设置url参数
 
 ````
 
