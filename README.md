@@ -29,15 +29,15 @@
         mHandler.setHandlerListenner(new SimpleTaskHandlerListenner());
 
         //设置一个线程池去下载文件，如果不设置，则会在当前线程进行下载。
-        
-        //在线程池中启动
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
                 6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
         mHandler.setThreadPool(threadPool);
-        
-        //或者
-        //在当前线程启动
+       
+        //开始任务
         mHandler.start();
+        
+        //停止/暂停 任务
+        mHandler.stop();
 ````
 上传:
 ```` java 
@@ -57,14 +57,15 @@
         mHandler.setHandlerListenner(new SimpleTaskHandlerListenner());
 
         //设置一个线程池去上传文件，如果不设置，则会在当前线程进行上传。
-        
-        //在线程池中启动
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
                 6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
         mHandler.setThreadPool(threadPool);
         
-        //或者在当前线程启动
+        //启动任务
         mHandler.start();
+        
+        //暂停/停止 任务
+        mHandler.stop();
 ````
 
 ## 使用任务管理:
